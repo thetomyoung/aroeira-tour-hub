@@ -8,7 +8,7 @@ export function Lightbox({
   onClose,
   onNavigate,
 }: {
-  images: { src: string; caption?: string }[];
+  images: { src: string; caption?: string | undefined }[];
   index: number | null;
   onClose: () => void;
   onNavigate: (i: number) => void;

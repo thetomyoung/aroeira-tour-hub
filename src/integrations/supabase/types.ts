@@ -14,7 +14,231 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      awards: {
+        Row: {
+          created_at: string
+          detail: string | null
+          id: string
+          kind: string
+          player_id: string | null
+          round_no: number
+          value: number | null
+        }
+        Insert: {
+          created_at?: string
+          detail?: string | null
+          id?: string
+          kind: string
+          player_id?: string | null
+          round_no?: number
+          value?: number | null
+        }
+        Update: {
+          created_at?: string
+          detail?: string | null
+          id?: string
+          kind?: string
+          player_id?: string | null
+          round_no?: number
+          value?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "awards_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fixtures: {
+        Row: {
+          created_at: string
+          format: string
+          id: string
+          result: string | null
+          round_no: number
+          side_a: string[]
+          side_b: string[]
+          sort_order: number
+          tee_time: string | null
+        }
+        Insert: {
+          created_at?: string
+          format?: string
+          id?: string
+          result?: string | null
+          round_no?: number
+          side_a?: string[]
+          side_b?: string[]
+          sort_order?: number
+          tee_time?: string | null
+        }
+        Update: {
+          created_at?: string
+          format?: string
+          id?: string
+          result?: string | null
+          round_no?: number
+          side_a?: string[]
+          side_b?: string[]
+          sort_order?: number
+          tee_time?: string | null
+        }
+        Relationships: []
+      }
+      photos: {
+        Row: {
+          caption: string | null
+          created_at: string
+          id: string
+          trip_year: number
+          url: string
+        }
+        Insert: {
+          caption?: string | null
+          created_at?: string
+          id?: string
+          trip_year?: number
+          url: string
+        }
+        Update: {
+          caption?: string | null
+          created_at?: string
+          id?: string
+          trip_year?: number
+          url?: string
+        }
+        Relationships: []
+      }
+      players: {
+        Row: {
+          created_at: string
+          current_form: string
+          driving_distance: number
+          favourite_club: string
+          handicap: number
+          handicap_index: number
+          id: string
+          name: string
+          photo_url: string | null
+          previous_wins: number
+          ryder_record: string
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          current_form?: string
+          driving_distance?: number
+          favourite_club?: string
+          handicap?: number
+          handicap_index?: number
+          id?: string
+          name: string
+          photo_url?: string | null
+          previous_wins?: number
+          ryder_record?: string
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          current_form?: string
+          driving_distance?: number
+          favourite_club?: string
+          handicap?: number
+          handicap_index?: number
+          id?: string
+          name?: string
+          photo_url?: string | null
+          previous_wins?: number
+          ryder_record?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
+      scores: {
+        Row: {
+          created_at: string
+          gross: number
+          hole: number
+          id: string
+          player_id: string
+          round_no: number
+        }
+        Insert: {
+          created_at?: string
+          gross: number
+          hole: number
+          id?: string
+          player_id: string
+          round_no: number
+        }
+        Update: {
+          created_at?: string
+          gross?: number
+          hole?: number
+          id?: string
+          player_id?: string
+          round_no?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scores_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      settings: {
+        Row: {
+          key: string
+          updated_at: string
+          value: Json
+        }
+        Insert: {
+          key: string
+          updated_at?: string
+          value?: Json
+        }
+        Update: {
+          key?: string
+          updated_at?: string
+          value?: Json
+        }
+        Relationships: []
+      }
+      teams: {
+        Row: {
+          id: string
+          is_captain: boolean
+          player_id: string
+          team: string
+        }
+        Insert: {
+          id?: string
+          is_captain?: boolean
+          player_id: string
+          team: string
+        }
+        Update: {
+          id?: string
+          is_captain?: boolean
+          player_id?: string
+          team?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "teams_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: true
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

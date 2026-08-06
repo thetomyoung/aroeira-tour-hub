@@ -10,6 +10,9 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CoursesRouteImport } from './routes/courses'
+import { Route as DrawRouteImport } from './routes/draw'
+import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as ScorecardsRouteImport } from './routes/scorecards'
 import { Route as ScoresRouteImport } from './routes/scores'
@@ -17,6 +20,21 @@ import { Route as ScoresRouteImport } from './routes/scores'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CoursesRoute = CoursesRouteImport.update({
+  id: '/courses',
+  path: '/courses',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DrawRoute = DrawRouteImport.update({
+  id: '/draw',
+  path: '/draw',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GalleryRoute = GalleryRouteImport.update({
+  id: '/gallery',
+  path: '/gallery',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LeaderboardRoute = LeaderboardRouteImport.update({
@@ -37,12 +55,18 @@ const ScoresRoute = ScoresRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/courses': typeof CoursesRoute
+  '/draw': typeof DrawRoute
+  '/gallery': typeof GalleryRoute
   '/leaderboard': typeof LeaderboardRoute
   '/scorecards': typeof ScorecardsRoute
   '/scores': typeof ScoresRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/courses': typeof CoursesRoute
+  '/draw': typeof DrawRoute
+  '/gallery': typeof GalleryRoute
   '/leaderboard': typeof LeaderboardRoute
   '/scorecards': typeof ScorecardsRoute
   '/scores': typeof ScoresRoute
@@ -50,20 +74,48 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/courses': typeof CoursesRoute
+  '/draw': typeof DrawRoute
+  '/gallery': typeof GalleryRoute
   '/leaderboard': typeof LeaderboardRoute
   '/scorecards': typeof ScorecardsRoute
   '/scores': typeof ScoresRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/leaderboard' | '/scorecards' | '/scores'
+  fullPaths:
+    | '/'
+    | '/courses'
+    | '/draw'
+    | '/gallery'
+    | '/leaderboard'
+    | '/scorecards'
+    | '/scores'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/leaderboard' | '/scorecards' | '/scores'
-  id: '__root__' | '/' | '/leaderboard' | '/scorecards' | '/scores'
+  to:
+    | '/'
+    | '/courses'
+    | '/draw'
+    | '/gallery'
+    | '/leaderboard'
+    | '/scorecards'
+    | '/scores'
+  id:
+    | '__root__'
+    | '/'
+    | '/courses'
+    | '/draw'
+    | '/gallery'
+    | '/leaderboard'
+    | '/scorecards'
+    | '/scores'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CoursesRoute: typeof CoursesRoute
+  DrawRoute: typeof DrawRoute
+  GalleryRoute: typeof GalleryRoute
   LeaderboardRoute: typeof LeaderboardRoute
   ScorecardsRoute: typeof ScorecardsRoute
   ScoresRoute: typeof ScoresRoute
@@ -76,6 +128,27 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/courses': {
+      id: '/courses'
+      path: '/courses'
+      fullPath: '/courses'
+      preLoaderRoute: typeof CoursesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/draw': {
+      id: '/draw'
+      path: '/draw'
+      fullPath: '/draw'
+      preLoaderRoute: typeof DrawRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/gallery': {
+      id: '/gallery'
+      path: '/gallery'
+      fullPath: '/gallery'
+      preLoaderRoute: typeof GalleryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/leaderboard': {
@@ -104,6 +177,9 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CoursesRoute: CoursesRoute,
+  DrawRoute: DrawRoute,
+  GalleryRoute: GalleryRoute,
   LeaderboardRoute: LeaderboardRoute,
   ScorecardsRoute: ScorecardsRoute,
   ScoresRoute: ScoresRoute,

@@ -61,59 +61,59 @@
 :root {
   --radius: 0.75rem;
 
-  --background: oklch(0.16 0.024 158);
-  --foreground: oklch(0.96 0.012 100);
+  --background: oklch(0.975 0.014 92);
+  --foreground: oklch(0.26 0.045 158);
 
-  --card: oklch(0.21 0.031 159);
-  --card-foreground: oklch(0.96 0.012 100);
-  --popover: oklch(0.19 0.028 159);
-  --popover-foreground: oklch(0.96 0.012 100);
+  --card: oklch(0.995 0.006 95);
+  --card-foreground: oklch(0.26 0.045 158);
+  --popover: oklch(0.99 0.008 95);
+  --popover-foreground: oklch(0.26 0.045 158);
 
-  --primary: oklch(0.82 0.14 88);
-  --primary-foreground: oklch(0.17 0.03 158);
+  --primary: oklch(0.42 0.09 157);
+  --primary-foreground: oklch(0.98 0.012 95);
 
-  --secondary: oklch(0.27 0.045 158);
-  --secondary-foreground: oklch(0.95 0.012 100);
+  --secondary: oklch(0.94 0.018 118);
+  --secondary-foreground: oklch(0.28 0.05 158);
 
-  --muted: oklch(0.25 0.032 158);
-  --muted-foreground: oklch(0.74 0.02 130);
+  --muted: oklch(0.93 0.016 105);
+  --muted-foreground: oklch(0.48 0.025 150);
 
-  --accent: oklch(0.34 0.075 155);
-  --accent-foreground: oklch(0.96 0.012 100);
+  --accent: oklch(0.9 0.045 120);
+  --accent-foreground: oklch(0.26 0.05 158);
 
-  --destructive: oklch(0.58 0.2 27);
-  --destructive-foreground: oklch(0.97 0.01 100);
+  --destructive: oklch(0.55 0.2 27);
+  --destructive-foreground: oklch(0.98 0.01 95);
 
-  --border: oklch(0.34 0.04 158 / 60%);
-  --input: oklch(0.3 0.04 158);
-  --ring: oklch(0.82 0.14 88);
+  --border: oklch(0.42 0.05 158 / 18%);
+  --input: oklch(0.9 0.02 118);
+  --ring: oklch(0.55 0.11 82);
 
-  --gold: oklch(0.83 0.145 88);
-  --gold-soft: oklch(0.9 0.09 92);
-  --silver: oklch(0.86 0.008 250);
-  --bronze: oklch(0.68 0.11 55);
-  --fairway: oklch(0.55 0.14 150);
-  --fairway-deep: oklch(0.28 0.07 156);
+  --gold: oklch(0.66 0.13 80);
+  --gold-soft: oklch(0.78 0.12 88);
+  --silver: oklch(0.66 0.008 250);
+  --bronze: oklch(0.58 0.11 55);
+  --fairway: oklch(0.5 0.13 150);
+  --fairway-deep: oklch(0.32 0.08 156);
 
-  --chart-1: oklch(0.83 0.145 88);
-  --chart-2: oklch(0.55 0.14 150);
-  --chart-3: oklch(0.68 0.11 55);
-  --chart-4: oklch(0.86 0.008 250);
-  --chart-5: oklch(0.4 0.09 158);
+  --chart-1: oklch(0.66 0.13 80);
+  --chart-2: oklch(0.5 0.13 150);
+  --chart-3: oklch(0.58 0.11 55);
+  --chart-4: oklch(0.66 0.008 250);
+  --chart-5: oklch(0.42 0.09 157);
 
-  --sidebar: oklch(0.19 0.028 159);
-  --sidebar-foreground: oklch(0.96 0.012 100);
-  --sidebar-primary: oklch(0.83 0.145 88);
-  --sidebar-primary-foreground: oklch(0.17 0.03 158);
-  --sidebar-accent: oklch(0.27 0.045 158);
-  --sidebar-accent-foreground: oklch(0.96 0.012 100);
-  --sidebar-border: oklch(0.34 0.04 158 / 60%);
-  --sidebar-ring: oklch(0.83 0.145 88);
+  --sidebar: oklch(0.99 0.008 95);
+  --sidebar-foreground: oklch(0.26 0.045 158);
+  --sidebar-primary: oklch(0.42 0.09 157);
+  --sidebar-primary-foreground: oklch(0.98 0.012 95);
+  --sidebar-accent: oklch(0.94 0.018 118);
+  --sidebar-accent-foreground: oklch(0.26 0.05 158);
+  --sidebar-border: oklch(0.42 0.05 158 / 18%);
+  --sidebar-ring: oklch(0.55 0.11 82);
 
-  --gradient-gold: linear-gradient(115deg, oklch(0.72 0.12 78), oklch(0.93 0.11 95), oklch(0.78 0.13 82));
-  --gradient-night: linear-gradient(180deg, oklch(0.16 0.024 158 / 0%), oklch(0.12 0.02 158 / 92%));
-  --shadow-lux: 0 24px 60px -24px oklch(0 0 0 / 70%);
-  --shadow-gold: 0 0 0 1px oklch(0.83 0.145 88 / 30%), 0 18px 45px -20px oklch(0.83 0.145 88 / 45%);
+  --gradient-gold: linear-gradient(115deg, oklch(0.58 0.12 72), oklch(0.74 0.13 90), oklch(0.62 0.13 78));
+  --gradient-night: linear-gradient(180deg, oklch(0.975 0.014 92 / 0%), oklch(0.975 0.014 92 / 88%));
+  --shadow-lux: 0 20px 50px -26px oklch(0.3 0.05 158 / 35%);
+  --shadow-gold: 0 0 0 1px oklch(0.66 0.13 80 / 32%), 0 16px 40px -22px oklch(0.66 0.13 80 / 45%);
 }
 
 .dark {
@@ -146,14 +146,14 @@
 }
 
 @utility glass {
-  background: color-mix(in oklab, var(--card) 62%, transparent);
+  background: color-mix(in oklab, var(--card) 78%, transparent);
   backdrop-filter: blur(18px) saturate(140%);
   border: 1px solid color-mix(in oklab, var(--gold) 16%, transparent);
   box-shadow: var(--shadow-lux);
 }
 
 @utility glass-gold {
-  background: color-mix(in oklab, var(--card) 70%, transparent);
+  background: color-mix(in oklab, var(--card) 84%, transparent);
   backdrop-filter: blur(18px) saturate(150%);
   border: 1px solid color-mix(in oklab, var(--gold) 38%, transparent);
   box-shadow: var(--shadow-gold);

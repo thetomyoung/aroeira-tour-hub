@@ -6,7 +6,7 @@ import heroPool from "@/assets/hero-pool.jpg";
 import heroTerrace from "@/assets/hero-terrace.jpg";
 
 export const TOUR = {
-  name: "2027 Golf Tour",
+  name: "SBF Golf Tour 2027",
   place: "Aroeira, Lisbon, Portugal",
   dates: "1st – 4th June 2027",
   startISO: "2027-06-01T06:00:00Z",

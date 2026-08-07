@@ -12,12 +12,12 @@ import { GALLERY_IMAGES } from "@/lib/tour";
 export const Route = createFileRoute("/gallery")({
   head: () => ({
     meta: [
-      { title: "Photo Gallery — 2027 Golf Tour, Aroeira" },
+      { title: "Photo Gallery — SBF Golf Tour 2027, Aroeira" },
       {
         name: "description",
-        content: "Photos from the 2027 Golf Tour at Aroeira and previous trips. Add your own shots from the course and the night out.",
+        content: "Photos from the SBF Golf Tour 2027 at Aroeira and previous trips. Add your own shots from the course and the night out.",
       },
-      { property: "og:title", content: "Photo Gallery — 2027 Golf Tour" },
+      { property: "og:title", content: "Photo Gallery — SBF Golf Tour 2027" },
       { property: "og:description", content: "The trip in pictures — courses, clubhouse, terrace and everything after dark." },
     ],
   }),

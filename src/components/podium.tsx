@@ -3,9 +3,9 @@ import { Trophy } from "lucide-react";
 import type { StandingRow } from "@/lib/tournament";
 
 const STEP = [
-  { h: "h-32 sm:h-44", tone: "text-gold", label: "1st", medal: "🥇" },
-  { h: "h-24 sm:h-32", tone: "text-silver", label: "2nd", medal: "🥈" },
-  { h: "h-20 sm:h-26", tone: "text-bronze", label: "3rd", medal: "🥉" },
+  { h: "h-32 sm:h-44", tone: "text-gold", label: "1st", Icon: Trophy },
+  { h: "h-24 sm:h-32", tone: "text-silver", label: "2nd", Icon: Medal },
+  { h: "h-20 sm:h-26", tone: "text-bronze", label: "3rd", Icon: Award },
 ];
 
 function Step({ row, place }: { row: StandingRow | undefined; place: number }) {
@@ -21,7 +21,7 @@ function Step({ row, place }: { row: StandingRow | undefined; place: number }) {
             exit={{ opacity: 0, y: 14, scale: 0.9 }}
             transition={{ type: "spring", stiffness: 220, damping: 22 }}
           >
-            <p className="text-lg leading-none">{s.medal}</p>
+            <s.Icon className={`mx-auto size-5 ${s.tone}`} strokeWidth={1.5} />
             <p className="mt-1 max-w-24 truncate font-display text-lg leading-none sm:max-w-36 sm:text-2xl">
               {row?.player.name ?? "TBC"}
             </p>

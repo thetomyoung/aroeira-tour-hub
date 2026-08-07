@@ -3,6 +3,8 @@ import { AnimatePresence, motion } from "motion/react";
 import { Link } from "@tanstack/react-router";
 import { ChevronDown, Trophy } from "lucide-react";
 import { HERO_SLIDES, TOUR } from "@/lib/tour";
+import { Logo } from "@/components/logo";
+
 
 function useCountdown(target: string) {
   const [now, setNow] = useState(() => Date.now());
@@ -77,13 +79,15 @@ export function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
         >
-          <p className="eyebrow">{TOUR.dates}</p>
-          <h1 className="mt-4 text-[3.4rem] leading-[0.86] sm:text-8xl lg:text-[8.5rem]">
-            <span className="text-gilded">2027 Golf Tour</span>
+          <Logo className="size-20 sm:size-28" />
+          <p className="eyebrow mt-4">{TOUR.dates}</p>
+          <h1 className="mt-4 text-[3rem] leading-[0.88] sm:text-8xl lg:text-[8rem]">
+            <span className="text-gilded">SBF Golf Tour 2027</span>
           </h1>
           <p className="mt-3 max-w-xl text-base uppercase tracking-[0.22em] text-foreground/85 sm:text-lg">
             Aroeira, Lisbon, Portugal
           </p>
+
         </motion.div>
 
         <motion.div

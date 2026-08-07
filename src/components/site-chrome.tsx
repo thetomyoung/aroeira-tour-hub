@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
+import { Logo } from "@/components/logo";
 
 const LINKS = [
   { to: "/", label: "Hub" },
@@ -10,8 +11,10 @@ const LINKS = [
   { to: "/draw", label: "Draw Night" },
   { to: "/courses", label: "Courses" },
   { to: "/gallery", label: "Gallery" },
+  { to: "/slander", label: "Slander Wall" },
   { to: "/admin", label: "Admin" },
 ] as const;
+
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);

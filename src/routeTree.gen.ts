@@ -17,6 +17,7 @@ import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as ScorecardsRouteImport } from './routes/scorecards'
 import { Route as ScoresRouteImport } from './routes/scores'
+import { Route as SlanderRouteImport } from './routes/slander'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -58,6 +59,11 @@ const ScoresRoute = ScoresRouteImport.update({
   path: '/scores',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SlanderRoute = SlanderRouteImport.update({
+  id: '/slander',
+  path: '/slander',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -68,6 +74,7 @@ export interface FileRoutesByFullPath {
   '/leaderboard': typeof LeaderboardRoute
   '/scorecards': typeof ScorecardsRoute
   '/scores': typeof ScoresRoute
+  '/slander': typeof SlanderRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -78,6 +85,7 @@ export interface FileRoutesByTo {
   '/leaderboard': typeof LeaderboardRoute
   '/scorecards': typeof ScorecardsRoute
   '/scores': typeof ScoresRoute
+  '/slander': typeof SlanderRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -89,6 +97,7 @@ export interface FileRoutesById {
   '/leaderboard': typeof LeaderboardRoute
   '/scorecards': typeof ScorecardsRoute
   '/scores': typeof ScoresRoute
+  '/slander': typeof SlanderRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -101,6 +110,7 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/scorecards'
     | '/scores'
+    | '/slander'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -111,6 +121,7 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/scorecards'
     | '/scores'
+    | '/slander'
   id:
     | '__root__'
     | '/'
@@ -121,6 +132,7 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/scorecards'
     | '/scores'
+    | '/slander'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -132,6 +144,7 @@ export interface RootRouteChildren {
   LeaderboardRoute: typeof LeaderboardRoute
   ScorecardsRoute: typeof ScorecardsRoute
   ScoresRoute: typeof ScoresRoute
+  SlanderRoute: typeof SlanderRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -192,6 +205,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ScoresRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/slander': {
+      id: '/slander'
+      path: '/slander'
+      fullPath: '/slander'
+      preLoaderRoute: typeof SlanderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -204,6 +224,7 @@ const rootRouteChildren: RootRouteChildren = {
   LeaderboardRoute: LeaderboardRoute,
   ScorecardsRoute: ScorecardsRoute,
   ScoresRoute: ScoresRoute,
+  SlanderRoute: SlanderRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

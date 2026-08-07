@@ -103,7 +103,7 @@ function RoundTotalsAdmin() {
   const { data: players = [] } = usePlayers();
   const { data: totals = [] } = useRoundTotals();
   const save = useSaveRoundTotal();
-  const [round, setRound] = useState(ROUNDS[0]!.no);
+  const [round, setRound] = useState<number>(ROUNDS[0]!.no);
 
   return (
     <Card title="Daily Stableford totals (Golf GameBook)">

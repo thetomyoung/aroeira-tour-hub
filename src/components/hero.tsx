@@ -70,7 +70,7 @@ export function Hero() {
           className="absolute inset-0 -z-10 size-full object-cover"
         />
       </AnimatePresence>
-      <div className="absolute inset-0 -z-10 bg-background/45" />
+      <div className="absolute inset-0 -z-10 bg-background/15" />
       <div className="night-fade absolute inset-0 -z-10" />
 
       <div className="mx-auto w-full max-w-7xl px-4 pb-14 pt-28 sm:px-6 sm:pb-20">

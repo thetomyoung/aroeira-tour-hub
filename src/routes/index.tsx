@@ -8,23 +8,25 @@ import { Accommodation } from "@/components/accommodation";
 import { CourseCard } from "@/components/course-card";
 import { PlayerCards } from "@/components/player-cards";
 import { StatsGrid } from "@/components/stats-grid";
-import { Leaderboard } from "@/components/leaderboard";
+import { RacePodium } from "@/components/podium";
+import { TournamentBoard } from "@/components/tournament-board";
 import { COURSES } from "@/lib/tour";
-import { usePlayers, useScores, useAwards } from "@/lib/data";
+import { usePlayers, useScores, useAwards, useRoundTotals } from "@/lib/data";
+import { standings } from "@/lib/tournament";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "2027 Golf Tour — Aroeira, Lisbon | Tournament Hub" },
+      { title: "SBF Golf Tour 2027 – Lisbon | Tournament Hub" },
       {
         name: "description",
         content:
-          "The official hub for the 2027 Golf Tour at Aroeira, Lisbon. Live leaderboard, countdown, weather, agenda, courses and player profiles.",
+          "The official hub for the SBF Golf Tour 2027 at Aroeira, Lisbon. Race to Lisbon podium, Stableford leaderboard, countdown, weather, agenda and courses.",
       },
-      { property: "og:title", content: "2027 Golf Tour — Aroeira, Lisbon" },
+      { property: "og:title", content: "SBF Golf Tour 2027 – Lisbon" },
       {
         property: "og:description",
-        content: "Live leaderboard, countdown, agenda and course guides for the 2027 Golf Tour in Portugal.",
+        content: "Race to Lisbon podium, Stableford standings, countdown and course guides for the SBF Golf Tour 2027.",
       },
     ],
   }),
@@ -35,6 +37,8 @@ function Index() {
   const { data: players = [] } = usePlayers();
   const { data: scores = [] } = useScores();
   const { data: awards = [] } = useAwards();
+  const { data: roundTotals = [] } = useRoundTotals();
+  const rows = standings(players, roundTotals, "overall");
 
   return (
     <>
@@ -61,9 +65,12 @@ function Index() {
         id="leaderboard"
         eyebrow="Standings"
         title="Overall Leaderboard"
-        intro="Points update the moment a score is entered on any phone in the group."
+        intro="Golf GameBook scores each round; the organiser posts one Stableford total per player and the podium re-shuffles."
       >
-        <Leaderboard players={players} scores={scores} round="overall" />
+        <div className="space-y-6">
+          <RacePodium rows={rows} />
+          <TournamentBoard rows={rows} scope="overall" />
+        </div>
       </Section>
 
       <Section

@@ -2,6 +2,7 @@ import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { Player, Score } from "./golf";
+import type { RoundTotal } from "./tournament";
 
 export type Fixture = {
   id: string;
@@ -131,9 +132,36 @@ export function useLiveSync() {
       .on("postgres_changes", { event: "*", schema: "public", table: "players" }, () =>
         qc.invalidateQueries({ queryKey: ["players"] }),
       )
+      .on("postgres_changes", { event: "*", schema: "public", table: "round_totals" }, () =>
+        qc.invalidateQueries({ queryKey: ["round_totals"] }),
+      )
       .subscribe();
     return () => {
       void supabase.removeChannel(channel);
     };
   }, [qc]);
+}
+
+export function useRoundTotals() {
+  return useQuery({
+    queryKey: ["round_totals"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("round_totals").select("*");
+      if (error) throw error;
+      return (data ?? []) as unknown as RoundTotal[];
+    },
+  });
+}
+
+export function useSaveRoundTotal() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ player_id, round_no, points }: { player_id: string; round_no: number; points: number }) => {
+      const { error } = await supabase
+        .from("round_totals")
+        .upsert({ player_id, round_no, points }, { onConflict: "player_id,round_no" });
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["round_totals"] }),
+  });
 }

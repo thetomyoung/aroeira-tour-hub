@@ -13,12 +13,12 @@ import { leaderboard, roundStats, stablefordPoints } from "@/lib/golf";
 export const Route = createFileRoute("/scores")({
   head: () => ({
     meta: [
-      { title: "Enter Scores — 2027 Golf Tour, Aroeira" },
+      { title: "Enter Scores — SBF Golf Tour 2027, Aroeira" },
       {
         name: "description",
-        content: "Enter hole-by-hole gross scores and the 2027 Golf Tour hub calculates stableford, running totals and leaderboards automatically.",
+        content: "Enter hole-by-hole gross scores and the SBF Golf Tour 2027 hub calculates stableford, running totals and leaderboards automatically.",
       },
-      { property: "og:title", content: "Enter Scores — 2027 Golf Tour" },
+      { property: "og:title", content: "Enter Scores — SBF Golf Tour 2027" },
       { property: "og:description", content: "Fast on-course scoring with automatic stableford calculation." },
     ],
   }),

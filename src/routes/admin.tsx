@@ -6,18 +6,19 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/section";
 import { useAdmin } from "@/lib/admin";
-import { usePlayers, useFixtures, usePhotos, useSetting, useSaveSetting } from "@/lib/data";
+import { usePlayers, useFixtures, usePhotos, useSetting, useSaveSetting, useRoundTotals, useSaveRoundTotal } from "@/lib/data";
+import { ROUNDS } from "@/lib/tour";
 import type { Player } from "@/lib/golf";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
     meta: [
-      { title: "Organiser Admin — 2027 Golf Tour, Aroeira" },
+      { title: "Organiser Admin — SBF Golf Tour 2027, Aroeira" },
       {
         name: "description",
-        content: "Passcode-protected organiser tools for the 2027 Golf Tour: manage players, handicaps, tee times, fixtures, photos and the weather location.",
+        content: "Passcode-protected organiser tools for the SBF Golf Tour 2027: manage players, handicaps, tee times, fixtures, photos and the weather location.",
       },
-      { property: "og:title", content: "Organiser Admin — 2027 Golf Tour" },
+      { property: "og:title", content: "Organiser Admin — SBF Golf Tour 2027" },
       { property: "og:description", content: "Tournament management tools for the trip organisers." },
       { name: "robots", content: "noindex" },
     ],
@@ -76,6 +77,7 @@ function AdminPage() {
         >
           <LogOut className="size-3.5" /> Lock admin
         </button>
+        <RoundTotalsAdmin />
         <PlayersAdmin />
         <FixturesAdmin />
         <PhotosAdmin />
@@ -96,6 +98,92 @@ function Card({ title, children }: { title: string; children: React.ReactNode })
 
 const input =
   "w-full rounded-lg border border-border bg-input/40 px-3 py-2 text-sm outline-none focus:border-primary";
+
+function RoundTotalsAdmin() {
+  const { data: players = [] } = usePlayers();
+  const { data: totals = [] } = useRoundTotals();
+  const save = useSaveRoundTotal();
+  const [round, setRound] = useState<number>(ROUNDS[0]!.no);
+
+  return (
+    <Card title="Daily Stableford totals (Golf GameBook)">
+      <p className="mb-4 text-xs text-muted-foreground">
+        Enter one number per player after each round. The leaderboard, podium and all tournament stats update
+        automatically.
+      </p>
+      <div className="mb-4 flex flex-wrap gap-2">
+        {ROUNDS.map((r) => (
+          <button
+            key={r.no}
+            type="button"
+            onClick={() => setRound(r.no)}
+            className={`rounded-full px-4 py-2 font-display text-base tracking-wider transition-colors ${
+              round === r.no ? "bg-primary text-primary-foreground" : "border border-border text-muted-foreground"
+            }`}
+          >
+            {r.label}
+          </button>
+        ))}
+      </div>
+      <div className="grid gap-2 sm:grid-cols-2">
+        {players.map((p) => (
+          <TotalRow
+            key={p.id}
+            name={p.name}
+            value={totals.find((t) => t.player_id === p.id && t.round_no === round)?.points ?? null}
+            onSave={(points) =>
+              save.mutate(
+                { player_id: p.id, round_no: round, points },
+                { onSuccess: () => toast.success(`${p.name}: ${points} pts saved`) },
+              )
+            }
+          />
+        ))}
+        {!players.length && <p className="text-sm text-muted-foreground">Add players first.</p>}
+      </div>
+    </Card>
+  );
+}
+
+function TotalRow({
+  name,
+  value,
+  onSave,
+}: {
+  name: string;
+  value: number | null;
+  onSave: (points: number) => void;
+}) {
+  const [draft, setDraft] = useState(value == null ? "" : String(value));
+  const [lastValue, setLastValue] = useState(value);
+  if (value !== lastValue) {
+    setLastValue(value);
+    setDraft(value == null ? "" : String(value));
+  }
+
+  return (
+    <div className="flex items-center gap-3 rounded-xl border border-border px-3 py-2">
+      <span className="min-w-0 flex-1 truncate text-sm font-semibold">{name}</span>
+      <input
+        type="number"
+        inputMode="numeric"
+        min={0}
+        max={99}
+        value={draft}
+        onChange={(e) => setDraft(e.target.value)}
+        className="w-20 rounded-lg border border-border bg-input/40 px-3 py-2 text-right text-sm outline-none focus:border-primary"
+      />
+      <button
+        type="button"
+        onClick={() => onSave(Math.max(0, Math.min(99, Number(draft) || 0)))}
+        className="grid size-9 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground"
+        aria-label={`Save total for ${name}`}
+      >
+        <Save className="size-4" />
+      </button>
+    </div>
+  );
+}
 
 function PlayersAdmin() {
   const qc = useQueryClient();

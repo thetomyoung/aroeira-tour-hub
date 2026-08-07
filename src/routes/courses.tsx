@@ -6,7 +6,7 @@ import { COURSES } from "@/lib/tour";
 export const Route = createFileRoute("/courses")({
   head: () => ({
     meta: [
-      { title: "Course Guide — Aroeira Pines & Challenge | 2027 Golf Tour" },
+      { title: "Course Guide — Aroeira Pines & Challenge | SBF Golf Tour 2027" },
       {
         name: "description",
         content: "Interactive hole-by-hole maps, ratings, slope and yardages for the Aroeira Pines Classic and Aroeira Challenge courses.",

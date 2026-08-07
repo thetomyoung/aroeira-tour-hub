@@ -11,12 +11,12 @@ import { stablefordPoints, strokesOnHole } from "@/lib/golf";
 export const Route = createFileRoute("/scorecards")({
   head: () => ({
     meta: [
-      { title: "Player Scorecards — 2027 Golf Tour, Aroeira" },
+      { title: "Player Scorecards — SBF Golf Tour 2027, Aroeira" },
       {
         name: "description",
-        content: "Interactive hole-by-hole scorecards for every player on the 2027 Golf Tour, exportable as PDF.",
+        content: "Interactive hole-by-hole scorecards for every player on the SBF Golf Tour 2027, exportable as PDF.",
       },
-      { property: "og:title", content: "Player Scorecards — 2027 Golf Tour" },
+      { property: "og:title", content: "Player Scorecards — SBF Golf Tour 2027" },
       { property: "og:description", content: "Par, stroke index, gross, stableford and running totals for every round." },
     ],
   }),
@@ -52,7 +52,7 @@ function ScorecardsPage() {
     doc.setFontSize(16);
     doc.text(`${player.name} — ${course.name}`, 14, 18);
     doc.setFontSize(10);
-    doc.text(`Round ${roundNo} · Handicap ${player.handicap} · 2027 Golf Tour, Aroeira`, 14, 25);
+    doc.text(`Round ${roundNo} · Handicap ${player.handicap} · SBF Golf Tour 2027, Aroeira`, 14, 25);
     autoTable(doc, {
       startY: 32,
       head: [["Hole", "Par", "SI", "Shots", "Gross", "Stableford", "Running"]],

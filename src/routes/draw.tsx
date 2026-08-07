@@ -12,12 +12,12 @@ import { ROUNDS } from "@/lib/tour";
 export const Route = createFileRoute("/draw")({
   head: () => ({
     meta: [
-      { title: "Draw Night — 2027 Golf Tour, Aroeira" },
+      { title: "Draw Night — SBF Golf Tour 2027, Aroeira" },
       {
         name: "description",
-        content: "Pick captains, draw the teams and generate fourball matchplay fixtures for the 2027 Golf Tour at Aroeira.",
+        content: "Pick captains, draw the teams and generate fourball matchplay fixtures for the SBF Golf Tour 2027 at Aroeira.",
       },
-      { property: "og:title", content: "Draw Night — 2027 Golf Tour" },
+      { property: "og:title", content: "Draw Night — SBF Golf Tour 2027" },
       { property: "og:description", content: "Captains, teams, pairs and matchplay fixtures for the trip." },
     ],
   }),

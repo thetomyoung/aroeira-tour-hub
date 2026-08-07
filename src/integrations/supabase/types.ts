@@ -157,6 +157,38 @@ export type Database = {
         }
         Relationships: []
       }
+      round_totals: {
+        Row: {
+          created_at: string
+          id: string
+          player_id: string
+          points: number
+          round_no: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          player_id: string
+          points?: number
+          round_no: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          player_id?: string
+          points?: number
+          round_no?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "round_totals_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       scores: {
         Row: {
           created_at: string

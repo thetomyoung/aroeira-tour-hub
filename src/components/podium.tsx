@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "motion/react";
-import { Trophy } from "lucide-react";
+import { Trophy, Medal, Award } from "lucide-react";
 import type { StandingRow } from "@/lib/tournament";
 
 const STEP = [

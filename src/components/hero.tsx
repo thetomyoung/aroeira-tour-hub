@@ -7,13 +7,15 @@ import { Logo } from "@/components/logo";
 
 function useCountdown(target: string) {
   const [mounted, setMounted] = useState(false);
-  const [now, setNow] = useState(() => Date.now());
+  const [now, setNow] = useState<number | null>(null);
   useEffect(() => {
     setMounted(true);
+    setNow(Date.now());
     const t = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(t);
   }, []);
-  const diff = Math.max(0, new Date(target).getTime() - now);
+  const targetMs = new Date(target).getTime();
+  const diff = now === null ? 0 : Math.max(0, targetMs - now);
   return {
     mounted,
     days: Math.floor(diff / 86400000),

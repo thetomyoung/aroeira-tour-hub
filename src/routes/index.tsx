@@ -45,19 +45,16 @@ function Index() {
       <Hero />
 
       <Section
-        id="weather"
-        eyebrow="Conditions"
-        title="Aroeira Forecast"
-        intro="Live conditions on the Costa da Caparica, refreshed automatically every fifteen minutes."
+        id="hub"
+        eyebrow="Tournament Hub"
+        title="Jump Straight In"
+        intro="Everything you need for the week, one tap away."
       >
-        <div className="grid gap-6 lg:grid-cols-[1.1fr_1fr]">
-          <WeatherCard />
-          <div className="grid gap-3 sm:grid-cols-2">
-            <QuickLink to="/leaderboard" icon={Trophy} title="Live Leaderboard" text="Ryder Cup style standings" />
-            <QuickLink to="/scores" icon={CalendarDays} title="Enter Scores" text="Hole by hole stableford" />
-            <QuickLink to="/draw" icon={Users} title="Draw Night" text="Teams, pairs and fixtures" />
-            <QuickLink to="/courses" icon={CloudSun} title="Course Guide" text="Every hole, hazard and tip" />
-          </div>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <QuickLink to="/leaderboard" icon={Trophy} title="Live Leaderboard" text="Ryder Cup style standings" />
+          <QuickLink to="/scores" icon={CalendarDays} title="Enter Scores" text="Hole by hole stableford" />
+          <QuickLink to="/draw" icon={Users} title="Draw Night" text="Teams, pairs and fixtures" />
+          <QuickLink to="/courses" icon={CloudSun} title="Course Guide" text="Every hole, hazard and tip" />
         </div>
       </Section>
 

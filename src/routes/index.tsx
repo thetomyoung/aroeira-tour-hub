@@ -103,6 +103,15 @@ function Index() {
       <Section id="stats" eyebrow="Numbers" title="Tour Statistics">
         <StatsGrid players={players} scores={scores} awards={awards} />
       </Section>
+
+      <Section
+        id="weather"
+        eyebrow="Conditions"
+        title="Aroeira Forecast"
+        intro="Live conditions on the Costa da Caparica, refreshed automatically every fifteen minutes."
+      >
+        <WeatherCard />
+      </Section>
     </>
   );
 }

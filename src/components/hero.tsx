@@ -5,15 +5,17 @@ import { ChevronDown, Trophy } from "lucide-react";
 import { HERO_SLIDES, TOUR } from "@/lib/tour";
 import { Logo } from "@/components/logo";
 
-
 function useCountdown(target: string) {
+  const [mounted, setMounted] = useState(false);
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
+    setMounted(true);
     const t = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(t);
   }, []);
   const diff = Math.max(0, new Date(target).getTime() - now);
   return {
+    mounted,
     days: Math.floor(diff / 86400000),
     hours: Math.floor(diff / 3600000) % 24,
     minutes: Math.floor(diff / 60000) % 60,
@@ -47,7 +49,7 @@ function Unit({ value, label }: { value: number; label: string }) {
 
 export function Hero() {
   const [index, setIndex] = useState(0);
-  const { days, hours, minutes, seconds } = useCountdown(TOUR.startISO);
+  const { mounted, days, hours, minutes, seconds } = useCountdown(TOUR.startISO);
 
   useEffect(() => {
     const t = setInterval(() => setIndex((i) => (i + 1) % HERO_SLIDES.length), 6000);
@@ -96,10 +98,21 @@ export function Hero() {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="mt-8 grid max-w-md grid-cols-4 gap-2 sm:gap-3"
         >
-          <Unit value={days} label="Days" />
-          <Unit value={hours} label="Hours" />
-          <Unit value={minutes} label="Mins" />
-          <Unit value={seconds} label="Secs" />
+          {mounted ? (
+            <>
+              <Unit value={days} label="Days" />
+              <Unit value={hours} label="Hours" />
+              <Unit value={minutes} label="Mins" />
+              <Unit value={seconds} label="Secs" />
+            </>
+          ) : (
+            <>
+              <Unit value={0} label="Days" />
+              <Unit value={0} label="Hours" />
+              <Unit value={0} label="Mins" />
+              <Unit value={0} label="Secs" />
+            </>
+          )}
         </motion.div>
 
         <motion.div

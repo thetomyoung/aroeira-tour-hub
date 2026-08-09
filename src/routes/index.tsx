@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CalendarDays, CloudSun, Trophy, Users } from "lucide-react";
+import { Backpack, CalendarDays, CloudSun, Trophy, Users } from "lucide-react";
 import { Hero } from "@/components/hero";
 import { Section, Reveal } from "@/components/section";
 import { WeatherCard } from "@/components/weather-card";
@@ -50,11 +50,12 @@ function Index() {
         title="Jump Straight In"
         intro="Everything you need for the week, one tap away."
       >
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
           <QuickLink to="/leaderboard" icon={Trophy} title="Live Leaderboard" text="Ryder Cup style standings" />
           <QuickLink to="/scores" icon={CalendarDays} title="Enter Scores" text="One total per player" />
           <QuickLink to="/draw" icon={Users} title="Draw Night" text="Teams, pairs and fixtures" />
           <QuickLink to="/courses" icon={CloudSun} title="Course Guide" text="Every hole, hazard and tip" />
+          <QuickLink to="/packing-list" icon={Backpack} title="Packing List" text="What to bring to Portugal" />
         </div>
       </Section>
 
@@ -122,7 +123,7 @@ function QuickLink({
   title,
   text,
 }: {
-  to: "/leaderboard" | "/scores" | "/draw" | "/courses";
+  to: "/leaderboard" | "/scores" | "/draw" | "/courses" | "/packing-list";
   icon: typeof Trophy;
   title: string;
   text: string;

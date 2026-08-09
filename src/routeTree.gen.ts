@@ -15,6 +15,7 @@ import { Route as CoursesRouteImport } from './routes/courses'
 import { Route as DrawRouteImport } from './routes/draw'
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
+import { Route as PackingListRouteImport } from './routes/packing-list'
 import { Route as ScorecardsRouteImport } from './routes/scorecards'
 import { Route as ScoresRouteImport } from './routes/scores'
 import { Route as SlanderRouteImport } from './routes/slander'
@@ -49,6 +50,11 @@ const LeaderboardRoute = LeaderboardRouteImport.update({
   path: '/leaderboard',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PackingListRoute = PackingListRouteImport.update({
+  id: '/packing-list',
+  path: '/packing-list',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ScorecardsRoute = ScorecardsRouteImport.update({
   id: '/scorecards',
   path: '/scorecards',
@@ -72,6 +78,7 @@ export interface FileRoutesByFullPath {
   '/draw': typeof DrawRoute
   '/gallery': typeof GalleryRoute
   '/leaderboard': typeof LeaderboardRoute
+  '/packing-list': typeof PackingListRoute
   '/scorecards': typeof ScorecardsRoute
   '/scores': typeof ScoresRoute
   '/slander': typeof SlanderRoute
@@ -83,6 +90,7 @@ export interface FileRoutesByTo {
   '/draw': typeof DrawRoute
   '/gallery': typeof GalleryRoute
   '/leaderboard': typeof LeaderboardRoute
+  '/packing-list': typeof PackingListRoute
   '/scorecards': typeof ScorecardsRoute
   '/scores': typeof ScoresRoute
   '/slander': typeof SlanderRoute
@@ -95,6 +103,7 @@ export interface FileRoutesById {
   '/draw': typeof DrawRoute
   '/gallery': typeof GalleryRoute
   '/leaderboard': typeof LeaderboardRoute
+  '/packing-list': typeof PackingListRoute
   '/scorecards': typeof ScorecardsRoute
   '/scores': typeof ScoresRoute
   '/slander': typeof SlanderRoute
@@ -108,6 +117,7 @@ export interface FileRouteTypes {
     | '/draw'
     | '/gallery'
     | '/leaderboard'
+    | '/packing-list'
     | '/scorecards'
     | '/scores'
     | '/slander'
@@ -119,6 +129,7 @@ export interface FileRouteTypes {
     | '/draw'
     | '/gallery'
     | '/leaderboard'
+    | '/packing-list'
     | '/scorecards'
     | '/scores'
     | '/slander'
@@ -130,6 +141,7 @@ export interface FileRouteTypes {
     | '/draw'
     | '/gallery'
     | '/leaderboard'
+    | '/packing-list'
     | '/scorecards'
     | '/scores'
     | '/slander'
@@ -142,6 +154,7 @@ export interface RootRouteChildren {
   DrawRoute: typeof DrawRoute
   GalleryRoute: typeof GalleryRoute
   LeaderboardRoute: typeof LeaderboardRoute
+  PackingListRoute: typeof PackingListRoute
   ScorecardsRoute: typeof ScorecardsRoute
   ScoresRoute: typeof ScoresRoute
   SlanderRoute: typeof SlanderRoute
@@ -191,6 +204,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LeaderboardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/packing-list': {
+      id: '/packing-list'
+      path: '/packing-list'
+      fullPath: '/packing-list'
+      preLoaderRoute: typeof PackingListRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/scorecards': {
       id: '/scorecards'
       path: '/scorecards'
@@ -222,6 +242,7 @@ const rootRouteChildren: RootRouteChildren = {
   DrawRoute: DrawRoute,
   GalleryRoute: GalleryRoute,
   LeaderboardRoute: LeaderboardRoute,
+  PackingListRoute: PackingListRoute,
   ScorecardsRoute: ScorecardsRoute,
   ScoresRoute: ScoresRoute,
   SlanderRoute: SlanderRoute,

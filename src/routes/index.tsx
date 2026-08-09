@@ -52,7 +52,7 @@ function Index() {
       >
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <QuickLink to="/leaderboard" icon={Trophy} title="Live Leaderboard" text="Ryder Cup style standings" />
-          <QuickLink to="/scores" icon={CalendarDays} title="Enter Scores" text="Hole by hole stableford" />
+          <QuickLink to="/scores" icon={CalendarDays} title="Enter Scores" text="One total per player" />
           <QuickLink to="/draw" icon={Users} title="Draw Night" text="Teams, pairs and fixtures" />
           <QuickLink to="/courses" icon={CloudSun} title="Course Guide" text="Every hole, hazard and tip" />
         </div>

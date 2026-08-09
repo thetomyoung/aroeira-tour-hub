@@ -1,295 +1,162 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { motion } from "motion/react";
-import { Check, Minus, Plus, Target, Ruler } from "lucide-react";
+import { Check, Trophy } from "lucide-react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/section";
-import { usePlayers, useScores, useAwards } from "@/lib/data";
-import { courseForRound, ROUNDS } from "@/lib/tour";
-import { leaderboard, roundStats, stablefordPoints } from "@/lib/golf";
+import { RacePodium } from "@/components/podium";
+import { usePlayers, useRoundTotals, useSaveRoundTotal } from "@/lib/data";
+import { ROUNDS } from "@/lib/tour";
+import { standings } from "@/lib/tournament";
 
 export const Route = createFileRoute("/scores")({
   head: () => ({
     meta: [
-      { title: "Enter Scores — SBF Golf Tour 2027, Aroeira" },
+      { title: "Enter Stableford Totals — SBF Golf Tour 2027, Lisbon" },
       {
         name: "description",
-        content: "Enter hole-by-hole gross scores and the SBF Golf Tour 2027 hub calculates stableford, running totals and leaderboards automatically.",
+        content:
+          "Organiser entry for the SBF Golf Tour 2027: one Stableford total per player per round, and the individual leaderboard updates instantly.",
       },
-      { property: "og:title", content: "Enter Scores — SBF Golf Tour 2027" },
-      { property: "og:description", content: "Fast on-course scoring with automatic stableford calculation." },
+      { property: "og:title", content: "Enter Stableford Totals — SBF Golf Tour 2027" },
+      {
+        property: "og:description",
+        content: "One number per player per round — the tournament standings do the rest.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: ScoresPage,
 });
 
 function ScoresPage() {
-  const qc = useQueryClient();
   const { data: players = [] } = usePlayers();
-  const { data: scores = [] } = useScores();
-  const { data: awards = [] } = useAwards();
+  const { data: totals = [] } = useRoundTotals();
+  const save = useSaveRoundTotal();
 
   const [roundNo, setRoundNo] = useState(1);
-  const [playerId, setPlayerId] = useState("");
-  const [hole, setHole] = useState(1);
-  const [gross, setGross] = useState(5);
+  const [draft, setDraft] = useState<Record<string, string>>({});
 
-  const player = players.find((p) => p.id === playerId) ?? players[0];
-  const course = courseForRound(roundNo);
-  const holeInfo = course.holes[hole - 1]!;
+  useEffect(() => {
+    const next: Record<string, string> = {};
+    for (const p of players) {
+      const t = totals.find((x) => x.player_id === p.id && x.round_no === roundNo);
+      next[p.id] = t ? String(t.points) : "";
+    }
+    setDraft(next);
+  }, [players, totals, roundNo]);
 
-  const save = useMutation({
-    mutationFn: async () => {
-      if (!player) throw new Error("Add a player first");
-      const { error } = await supabase
-        .from("scores")
-        .upsert(
-          { player_id: player.id, round_no: roundNo, hole, gross },
-          { onConflict: "player_id,round_no,hole" },
-        );
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["scores"] });
-      toast.success(`Hole ${hole} saved for ${player?.name}`);
-      if (hole < 18) setHole(hole + 1);
-    },
-    onError: (e: Error) => toast.error(e.message),
-  });
+  const rows = standings(players, totals, "overall");
 
-  const saveAward = useMutation({
-    mutationFn: async (kind: "nearest_pin" | "long_drive") => {
-      if (!player) throw new Error("Add a player first");
-      const { error } = await supabase
-        .from("awards")
-        .insert({ kind, round_no: roundNo, player_id: player.id, detail: `Hole ${hole}`, value: gross });
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["awards"] });
-      toast.success("Award recorded");
-    },
-    onError: (e: Error) => toast.error(e.message),
-  });
-
-  const stats = useMemo(
-    () => (player ? roundStats(player, scores, roundNo) : null),
-    [player, scores, roundNo],
-  );
-  const points = player ? stablefordPoints(gross, holeInfo, player.handicap) : 0;
-  const daily = leaderboard(players, scores, roundNo).slice(0, 5);
-  const overall = leaderboard(players, scores, "overall").slice(0, 5);
-  const ntp = awards.filter((a) => a.kind === "nearest_pin");
-  const drives = awards.filter((a) => a.kind === "long_drive");
-  const nameOf = (id?: string | null) => players.find((p) => p.id === id)?.name ?? "TBC";
+  async function saveAll() {
+    const entries = players
+      .map((p) => ({ p, raw: draft[p.id] ?? "" }))
+      .filter((e) => e.raw.trim() !== "");
+    if (!entries.length) {
+      toast.error("Enter at least one total");
+      return;
+    }
+    try {
+      for (const e of entries) {
+        await save.mutateAsync({ player_id: e.p.id, round_no: roundNo, points: Number(e.raw) });
+      }
+      toast.success(`Round ${roundNo} totals saved`);
+    } catch (err) {
+      toast.error((err as Error).message);
+    }
+  }
 
   return (
     <>
       <PageHeader
         eyebrow="Scoring"
-        title="Enter Scores"
-        intro="Pick a player, pick a hole, tap the gross score. Everything else is calculated for you."
+        title="Enter Stableford Totals"
+        intro="Golf GameBook does the hole-by-hole scoring on course. Here you just post one Stableford total per player per round."
       />
 
-      <div className="mx-auto grid max-w-7xl gap-6 px-4 py-10 sm:px-6 lg:grid-cols-[1.1fr_1fr]">
+      <div className="mx-auto grid max-w-7xl gap-6 px-4 py-10 sm:px-6 lg:grid-cols-[1fr_1fr]">
         <div className="glass rounded-2xl p-5">
-          <Field label="Round">
-            <div className="flex flex-wrap gap-2">
-              {ROUNDS.map((r) => (
-                <Chip key={r.no} active={roundNo === r.no} onClick={() => setRoundNo(r.no)} label={r.label} />
-              ))}
-            </div>
-          </Field>
-
-          <Field label="Player">
-            <div className="flex flex-wrap gap-2">
-              {players.map((p) => (
-                <Chip
-                  key={p.id}
-                  active={player?.id === p.id}
-                  onClick={() => setPlayerId(p.id)}
-                  label={p.name}
-                />
-              ))}
-            </div>
-          </Field>
-
-          <Field label={`Hole — ${course.name}`}>
-            <div className="grid grid-cols-6 gap-1.5 sm:grid-cols-9">
-              {course.holes.map((h) => (
-                <button
-                  key={h.hole}
-                  type="button"
-                  onClick={() => setHole(h.hole)}
-                  className={`rounded-lg border py-2 font-display text-lg transition-colors ${
-                    hole === h.hole
-                      ? "border-primary bg-primary text-primary-foreground"
-                      : "border-border/70 bg-secondary/50 text-foreground"
-                  }`}
-                >
-                  {h.hole}
-                </button>
-              ))}
-            </div>
-            <p className="mt-2 text-xs text-muted-foreground">
-              Par {holeInfo.par} · SI {holeInfo.si} · {holeInfo.yards} yards
-            </p>
-          </Field>
-
-          <Field label="Gross score">
-            <div className="flex items-center gap-4">
+          <p className="mb-2 text-[0.6rem] uppercase tracking-[0.24em] text-muted-foreground">Round</p>
+          <div className="flex flex-wrap gap-2">
+            {ROUNDS.map((r) => (
               <button
+                key={r.no}
                 type="button"
-                onClick={() => setGross((g) => Math.max(1, g - 1))}
-                className="grid size-12 place-items-center rounded-full border border-border"
-                aria-label="Decrease"
+                onClick={() => setRoundNo(r.no)}
+                className={`rounded-full px-4 py-2 text-sm transition-colors ${
+                  roundNo === r.no
+                    ? "bg-primary text-primary-foreground"
+                    : "border border-border text-muted-foreground"
+                }`}
               >
-                <Minus className="size-5" />
+                {r.label}
               </button>
-              <motion.span
-                key={gross}
-                initial={{ scale: 0.7, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                className="font-display text-6xl text-gilded"
+            ))}
+          </div>
+
+          <ul className="mt-5 space-y-2">
+            {players.map((p) => (
+              <li
+                key={p.id}
+                className="grid grid-cols-[minmax(0,1fr)_5.5rem] items-center gap-3 rounded-xl bg-secondary/50 px-4 py-2.5"
               >
-                {gross}
-              </motion.span>
-              <button
-                type="button"
-                onClick={() => setGross((g) => Math.min(15, g + 1))}
-                className="grid size-12 place-items-center rounded-full border border-border"
-                aria-label="Increase"
-              >
-                <Plus className="size-5" />
-              </button>
-              <span className="ml-auto text-right">
-                <span className="block text-[0.6rem] uppercase tracking-[0.2em] text-muted-foreground">
-                  Stableford
+                <span className="truncate">
+                  <span className="block font-semibold">{p.name}</span>
+                  <span className="text-[0.65rem] uppercase tracking-widest text-muted-foreground">
+                    hcp {p.handicap}
+                  </span>
                 </span>
-                <span className="font-display text-4xl text-primary">{points}</span>
-              </span>
-            </div>
-          </Field>
+                <input
+                  inputMode="numeric"
+                  value={draft[p.id] ?? ""}
+                  onChange={(e) =>
+                    setDraft((d) => ({ ...d, [p.id]: e.target.value.replace(/[^0-9]/g, "") }))
+                  }
+                  placeholder="–"
+                  aria-label={`${p.name} Stableford points`}
+                  className="rounded-lg border border-border bg-card px-3 py-2 text-center font-display text-2xl text-primary outline-none focus:ring-2 focus:ring-ring"
+                />
+              </li>
+            ))}
+          </ul>
 
           <button
             type="button"
-            disabled={save.isPending || !player}
-            onClick={() => save.mutate()}
-            className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3.5 font-display text-lg tracking-wider text-primary-foreground disabled:opacity-50"
+            disabled={save.isPending || !players.length}
+            onClick={() => void saveAll()}
+            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3.5 font-display text-lg tracking-wider text-primary-foreground disabled:opacity-50"
           >
-            <Check className="size-4" /> Save hole {hole}
+            <Check className="size-4" /> Save round {roundNo} totals
           </button>
-
-          <div className="mt-3 flex gap-2">
-            <button
-              type="button"
-              onClick={() => saveAward.mutate("nearest_pin")}
-              className="inline-flex flex-1 items-center justify-center gap-2 rounded-full border border-border px-4 py-2.5 text-xs uppercase tracking-widest text-muted-foreground"
-            >
-              <Target className="size-3.5" /> Nearest the pin
-            </button>
-            <button
-              type="button"
-              onClick={() => saveAward.mutate("long_drive")}
-              className="inline-flex flex-1 items-center justify-center gap-2 rounded-full border border-border px-4 py-2.5 text-xs uppercase tracking-widest text-muted-foreground"
-            >
-              <Ruler className="size-3.5" /> Long drive
-            </button>
-          </div>
         </div>
 
-        <div className="grid gap-4">
-          {stats && player && (
-            <div className="glass rounded-2xl p-5">
-              <p className="eyebrow">{player.name} · running total</p>
-              <div className="mt-3 grid grid-cols-4 gap-3 text-center">
-                <Mini label="Points" value={stats.points} />
-                <Mini label="Gross" value={stats.gross} />
-                <Mini label="Front 9" value={stats.front9} />
-                <Mini label="Back 9" value={stats.back9} />
-              </div>
-            </div>
-          )}
-
-          <MiniBoard title="Daily leaderboard" rows={daily} />
-          <MiniBoard title="Overall leaderboard" rows={overall} />
+        <div className="grid content-start gap-4">
+          <RacePodium rows={rows} />
 
           <div className="glass rounded-2xl p-5">
-            <p className="eyebrow">Side bets</p>
-            <ul className="mt-3 space-y-2 text-sm">
-              <li className="flex justify-between gap-4">
-                <span className="text-muted-foreground">Nearest the pin</span>
-                <span className="truncate">
-                  {ntp.length ? ntp.map((a) => `${nameOf(a.player_id)} (${a.detail})`).join(", ") : "TBC"}
-                </span>
-              </li>
-              <li className="flex justify-between gap-4">
-                <span className="text-muted-foreground">Long drive</span>
-                <span className="truncate">
-                  {drives.length ? drives.map((a) => nameOf(a.player_id)).join(", ") : "TBC"}
-                </span>
-              </li>
-            </ul>
+            <p className="eyebrow flex items-center gap-2">
+              <Trophy className="size-3.5 text-gold" /> Individual standings
+            </p>
+            <ol className="mt-3 space-y-1.5">
+              {rows.map((r, i) => (
+                <motion.li
+                  key={r.player.id}
+                  layout
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: Math.min(i * 0.03, 0.3) }}
+                  className="grid grid-cols-[2rem_minmax(0,1fr)_auto] items-center gap-3 text-sm"
+                >
+                  <span className="font-display text-lg text-muted-foreground">{r.position}</span>
+                  <span className="truncate">{r.player.name}</span>
+                  <span className="font-display text-xl text-primary">{r.total}</span>
+                </motion.li>
+              ))}
+            </ol>
           </div>
         </div>
       </div>
     </>
-  );
-}
-
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div className="mb-5">
-      <p className="mb-2 text-[0.6rem] uppercase tracking-[0.24em] text-muted-foreground">{label}</p>
-      {children}
-    </div>
-  );
-}
-
-function Chip({ active, onClick, label }: { active: boolean; onClick: () => void; label: string }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`rounded-full px-4 py-2 text-sm transition-colors ${
-        active ? "bg-primary text-primary-foreground" : "border border-border text-muted-foreground"
-      }`}
-    >
-      {label}
-    </button>
-  );
-}
-
-function Mini({ label, value }: { label: string; value: number }) {
-  return (
-    <div className="rounded-xl bg-secondary/50 py-3">
-      <p className="text-[0.55rem] uppercase tracking-[0.2em] text-muted-foreground">{label}</p>
-      <p className="font-display text-3xl text-primary">{value}</p>
-    </div>
-  );
-}
-
-function MiniBoard({
-  title,
-  rows,
-}: {
-  title: string;
-  rows: ReturnType<typeof leaderboard>;
-}) {
-  return (
-    <div className="glass rounded-2xl p-5">
-      <p className="eyebrow">{title}</p>
-      <ol className="mt-3 space-y-1.5">
-        {rows.map((r) => (
-          <li key={r.player.id} className="grid grid-cols-[2rem_minmax(0,1fr)_auto] items-center gap-3 text-sm">
-            <span className="font-display text-lg text-muted-foreground">{r.position}</span>
-            <span className="truncate">{r.player.name}</span>
-            <span className="font-display text-xl text-primary">{r.points}</span>
-          </li>
-        ))}
-      </ol>
-    </div>
   );
 }

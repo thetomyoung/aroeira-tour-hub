@@ -36,7 +36,7 @@ function Unit({ value, label }: { value: number; label: string }) {
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: "-60%", opacity: 0 }}
             transition={{ duration: 0.35, ease: "easeOut" }}
-            className="font-display text-3xl leading-none tabular-nums text-gilded sm:text-5xl"
+            className="font-display text-3xl leading-none tabular-nums text-primary sm:text-5xl"
           >
             {String(value).padStart(2, "0")}
           </motion.div>
@@ -74,7 +74,7 @@ export function Hero() {
           className="absolute inset-0 -z-10 size-full object-cover"
         />
       </AnimatePresence>
-      <div className="absolute inset-0 -z-10 bg-background/15" />
+      <div className="absolute inset-0 -z-10 bg-primary/20" />
       <div className="night-fade absolute inset-0 -z-10" />
 
       <div className="mx-auto w-full max-w-7xl px-4 pb-14 pt-28 sm:px-6 sm:pb-20">
@@ -84,11 +84,11 @@ export function Hero() {
           transition={{ duration: 0.8, ease: "easeOut" }}
         >
           <Logo className="size-20 sm:size-28" />
-          <p className="eyebrow mt-4">{TOUR.dates}</p>
+          <p className="mt-4 text-xs uppercase tracking-[0.28em] text-primary-foreground/85">{TOUR.dates}</p>
           <h1 className="mt-4 text-[3rem] leading-[0.88] sm:text-8xl lg:text-[8rem]">
-            <span className="text-gilded">SBF Golf Tour 2027</span>
+            <span className="text-primary-foreground">SBF Golf Tour 2027</span>
           </h1>
-          <p className="mt-3 max-w-xl text-base uppercase tracking-[0.22em] text-foreground/85 sm:text-lg">
+          <p className="mt-3 max-w-xl text-base uppercase tracking-[0.22em] text-primary-foreground/90 sm:text-lg">
             Aroeira, Lisbon, Portugal
           </p>
 
@@ -130,7 +130,7 @@ export function Hero() {
             <Trophy className="size-4" />
             View Leaderboard
           </Link>
-          <span className="text-xs uppercase tracking-[0.24em] text-muted-foreground">
+          <span className="text-xs uppercase tracking-[0.24em] text-primary-foreground/75">
             {HERO_SLIDES[index]!.label}
           </span>
         </motion.div>
@@ -144,13 +144,13 @@ export function Hero() {
             aria-label={s.label}
             onClick={() => setIndex(i)}
             className={`h-0.5 flex-1 rounded-full transition-colors ${
-              i === index ? "bg-primary" : "bg-foreground/25"
+              i === index ? "bg-primary-foreground" : "bg-primary-foreground/30"
             }`}
           />
         ))}
       </div>
 
-      <ChevronDown className="mx-auto mb-6 size-5 animate-bounce text-muted-foreground" />
+      <ChevronDown className="mx-auto mb-6 size-5 animate-bounce text-primary-foreground/75" />
     </section>
   );
 }

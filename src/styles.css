@@ -111,7 +111,12 @@
   --sidebar-ring: oklch(0.55 0.11 82);
 
   --gradient-gold: linear-gradient(115deg, oklch(0.50 0.12 70), oklch(0.66 0.135 88), oklch(0.54 0.13 76));
-  --gradient-night: linear-gradient(180deg, oklch(0.795 0.022 92 / 0%), oklch(0.795 0.022 92 / 90%));
+  --gradient-night: linear-gradient(
+    180deg,
+    oklch(0.18 0.055 158 / 12%) 0%,
+    oklch(0.18 0.055 158 / 38%) 48%,
+    oklch(0.14 0.05 158 / 92%) 100%
+  );
   --shadow-lux: 0 20px 50px -26px oklch(0.3 0.05 158 / 35%);
   --shadow-gold: 0 0 0 1px oklch(0.66 0.13 80 / 32%), 0 16px 40px -22px oklch(0.66 0.13 80 / 45%);
 }
@@ -160,10 +165,7 @@
 }
 
 @utility text-gilded {
-  background: var(--gradient-gold);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--primary);
 }
 
 @utility rule-gold {

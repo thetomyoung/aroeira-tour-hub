@@ -8,6 +8,7 @@ const LINKS = [
   { to: "/leaderboard", label: "Leaderboard" },
   { to: "/scores", label: "Enter Scores" },
   { to: "/scorecards", label: "Scorecards" },
+  { to: "/packing-list", label: "Packing" },
   { to: "/draw", label: "Draw Night" },
   { to: "/courses", label: "Courses" },
   { to: "/gallery", label: "Gallery" },

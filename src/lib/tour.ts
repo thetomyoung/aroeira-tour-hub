@@ -7,6 +7,13 @@ import heroTerrace from "@/assets/hero-terrace.jpg";
 import kailuaSunset from "@/assets/kailua-sunset.jpg";
 import kailuaMusic from "@/assets/kailua-music.jpg";
 import kailuaCocktails from "@/assets/kailua-cocktails.jpg";
+import hotelPoolAsset from "@/assets/hotel-pool-real.jpg.asset.json";
+import hotelRestaurantAsset from "@/assets/hotel-restaurant-real.jpg.asset.json";
+import hotelTerraceAsset from "@/assets/hotel-terrace-real.jpg.asset.json";
+
+const hotelPoolReal = hotelPoolAsset.url;
+const hotelRestaurantReal = hotelRestaurantAsset.url;
+const hotelTerraceReal = hotelTerraceAsset.url;
 
 export const KAILUA_IMAGES = [
   { src: kailuaSunset, label: "Sunset over Fonte da Telha" },

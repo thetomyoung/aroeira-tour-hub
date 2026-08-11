@@ -24,8 +24,8 @@ export const Route = createFileRoute("/draw")({
   component: DrawPage,
 });
 
-const TEAM_A = "Team Pines";
-const TEAM_B = "Team Atlantic";
+const TEAM_A = "Team Blue";
+const TEAM_B = "Team Red";
 
 function DrawPage() {
   const qc = useQueryClient();

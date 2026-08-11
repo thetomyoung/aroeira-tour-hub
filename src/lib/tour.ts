@@ -241,5 +241,5 @@ export const HOTEL = {
     { icon: "flower", label: "Spa", detail: "Indoor pool, sauna and treatment rooms" },
     { icon: "dumbbell", label: "Gym", detail: "24 hour fitness suite" },
   ],
-  images: [heroHotel, heroPool, heroTerrace, heroClubhouse],
+  images: [hotelPoolReal, hotelTerraceReal, hotelRestaurantReal, heroClubhouse],
 };

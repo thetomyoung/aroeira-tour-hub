@@ -1,12 +1,17 @@
 import heroPines from "@/assets/hero-pines.jpg";
-import heroHotel from "@/assets/hero-hotel.jpg";
 import heroChallenge from "@/assets/hero-challenge.jpg";
 import heroClubhouse from "@/assets/hero-clubhouse.jpg";
-import heroPool from "@/assets/hero-pool.jpg";
 import heroTerrace from "@/assets/hero-terrace.jpg";
 import kailuaSunset from "@/assets/kailua-sunset.jpg";
 import kailuaMusic from "@/assets/kailua-music.jpg";
 import kailuaCocktails from "@/assets/kailua-cocktails.jpg";
+import hotelPoolAsset from "@/assets/hotel-pool-real.jpg.asset.json";
+import hotelRestaurantAsset from "@/assets/hotel-restaurant-real.jpg.asset.json";
+import hotelTerraceAsset from "@/assets/hotel-terrace-real.jpg.asset.json";
+
+const hotelPoolReal = hotelPoolAsset.url;
+const hotelRestaurantReal = hotelRestaurantAsset.url;
+const hotelTerraceReal = hotelTerraceAsset.url;
 
 export const KAILUA_IMAGES = [
   { src: kailuaSunset, label: "Sunset over Fonte da Telha" },
@@ -26,10 +31,10 @@ export const TOUR = {
 
 export const HERO_SLIDES = [
   { src: heroPines, label: "Aroeira Pines Classic" },
-  { src: heroHotel, label: "Aroeira Lisbon Hotel" },
+  { src: hotelPoolReal, label: "Aroeira Lisbon Hotel" },
   { src: heroChallenge, label: "Aroeira Challenge Course" },
-  { src: heroClubhouse, label: "Resort Clubhouse" },
-  { src: heroPool, label: "Resort Pool" },
+  { src: hotelTerraceReal, label: "Resort Pool Terrace" },
+  { src: hotelRestaurantReal, label: "Hotel Restaurant" },
   { src: heroTerrace, label: "Evening Terrace" },
 ];
 
@@ -234,5 +239,5 @@ export const HOTEL = {
     { icon: "flower", label: "Spa", detail: "Indoor pool, sauna and treatment rooms" },
     { icon: "dumbbell", label: "Gym", detail: "24 hour fitness suite" },
   ],
-  images: [heroHotel, heroPool, heroTerrace, heroClubhouse],
+  images: [hotelPoolReal, hotelTerraceReal, hotelRestaurantReal, heroClubhouse],
 };

@@ -33,10 +33,10 @@ export const TOUR = {
 
 export const HERO_SLIDES = [
   { src: heroPines, label: "Aroeira Pines Classic" },
-  { src: heroHotel, label: "Aroeira Lisbon Hotel" },
+  { src: hotelPoolReal, label: "Aroeira Lisbon Hotel" },
   { src: heroChallenge, label: "Aroeira Challenge Course" },
-  { src: heroClubhouse, label: "Resort Clubhouse" },
-  { src: heroPool, label: "Resort Pool" },
+  { src: hotelTerraceReal, label: "Resort Pool Terrace" },
+  { src: hotelRestaurantReal, label: "Hotel Restaurant" },
   { src: heroTerrace, label: "Evening Terrace" },
 ];
 

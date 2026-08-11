@@ -177,6 +177,7 @@ export function AgendaTimeline() {
                             )}
                             <span className="text-sm text-foreground/90">{item.title}</span>
                             {item.special === "bidet" && <BidetItem item={item} />}
+                            {item.special === "kailua" && <KailuaItem item={item} />}
                           </span>
                         </motion.li>
                       );

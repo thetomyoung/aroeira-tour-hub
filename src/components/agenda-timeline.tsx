@@ -13,11 +13,13 @@ import {
   Search,
   Sun,
   Luggage,
+  Martini,
+  MapPin,
   ChevronDown,
   Eye,
   EyeOff,
 } from "lucide-react";
-import { AGENDA, type AgendaItem } from "@/lib/tour";
+import { AGENDA, KAILUA_IMAGES, type AgendaItem } from "@/lib/tour";
 
 const ICONS: Record<string, typeof Plane> = {
   plane: Plane,
@@ -32,7 +34,42 @@ const ICONS: Record<string, typeof Plane> = {
   search: Search,
   sun: Sun,
   luggage: Luggage,
+  martini: Martini,
 };
+
+function KailuaItem({ item }: { item: AgendaItem }) {
+  return (
+    <div className="mt-3 overflow-hidden rounded-2xl border border-border/60 bg-secondary/40">
+      <div className="grid grid-cols-3 gap-1 p-1">
+        {KAILUA_IMAGES.map((img, i) => (
+          <motion.img
+            key={img.src}
+            src={img.src}
+            alt={`Kailua Fonte da Telha — ${img.label}`}
+            loading="lazy"
+            width={1280}
+            height={864}
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: i * 0.08, duration: 0.4 }}
+            className={`h-24 w-full rounded-xl object-cover sm:h-32 ${i === 0 ? "col-span-3 h-40 sm:h-56" : ""}`}
+          />
+        ))}
+      </div>
+      {item.detail && <p className="px-3 pb-2 text-xs text-muted-foreground">{item.detail}</p>}
+      <a
+        href="https://www.google.com/maps/search/?api=1&query=Kailua+Fonte+da+Telha+Portugal"
+        target="_blank"
+        rel="noreferrer"
+        className="inline-flex items-center gap-2 px-3 pb-3 text-xs uppercase tracking-[0.2em] text-primary"
+      >
+        <MapPin className="size-3.5" />
+        Open in Maps
+      </a>
+    </div>
+  );
+}
+
 
 function BidetItem({ item }: { item: AgendaItem }) {
   const [shown, setShown] = useState(false);
@@ -140,6 +177,7 @@ export function AgendaTimeline() {
                             )}
                             <span className="text-sm text-foreground/90">{item.title}</span>
                             {item.special === "bidet" && <BidetItem item={item} />}
+                            {item.special === "kailua" && <KailuaItem item={item} />}
                           </span>
                         </motion.li>
                       );

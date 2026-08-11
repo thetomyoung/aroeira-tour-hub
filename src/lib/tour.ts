@@ -4,6 +4,15 @@ import heroChallenge from "@/assets/hero-challenge.jpg";
 import heroClubhouse from "@/assets/hero-clubhouse.jpg";
 import heroPool from "@/assets/hero-pool.jpg";
 import heroTerrace from "@/assets/hero-terrace.jpg";
+import kailuaSunset from "@/assets/kailua-sunset.jpg";
+import kailuaMusic from "@/assets/kailua-music.jpg";
+import kailuaCocktails from "@/assets/kailua-cocktails.jpg";
+
+export const KAILUA_IMAGES = [
+  { src: kailuaSunset, label: "Sunset over Fonte da Telha" },
+  { src: kailuaMusic, label: "Live music on the sand" },
+  { src: kailuaCocktails, label: "Cocktails at golden hour" },
+];
 
 export const TOUR = {
   name: "SBF Golf Tour 2027",
@@ -136,7 +145,7 @@ export type AgendaItem = {
   icon: string;
   title: string;
   detail?: string;
-  special?: "bidet";
+  special?: "bidet" | "kailua";
 };
 
 export type AgendaDay = {
@@ -158,6 +167,14 @@ export const AGENDA: AgendaDay[] = [
       { time: "14:00", icon: "flag", title: "Round 1 – PGA Aroeira No. 1" },
       { icon: "beer", title: "Post-round drinks" },
       { icon: "utensils", title: "Group dinner" },
+      {
+        time: "20:00",
+        icon: "martini",
+        title: "Kailua Fonte da Telha – sunset, cocktails, live music and beach babes",
+        detail:
+          "Right on the sand at Fonte da Telha, ten minutes from the resort. Get there for sunset, stay for the live band.",
+        special: "kailua",
+      },
       { icon: "moon", title: "Night out" },
     ],
   },

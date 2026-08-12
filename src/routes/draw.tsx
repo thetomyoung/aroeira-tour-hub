@@ -223,7 +223,7 @@ function DrawPage() {
                 </p>
                 <p className="mt-1 font-display text-xl">{r.format}</p>
                 <p className="text-xs text-muted-foreground">
-                  {r.matches} {r.matches === 1 ? "point" : "points"} available
+                  {r.matches} points available
                 </p>
               </div>
             ))}

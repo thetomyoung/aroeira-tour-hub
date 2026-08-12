@@ -177,6 +177,10 @@ export const TEAM_MATCH = {
   tiebreak: "A putting competition decides the winners if the match finishes level.",
 };
 
+export const courseForRound = (roundNo: number) =>
+  COURSES.find((c) => c.id === ROUNDS.find((r) => r.no === roundNo)?.courseId) ?? COURSES[0]!;
+
+
 
 export type AgendaItem = {
   time?: string;

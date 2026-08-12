@@ -7,18 +7,18 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/section";
 import { usePlayers, useTeams, useFixtures } from "@/lib/data";
-import { ROUNDS } from "@/lib/tour";
+import { ROUNDS, TEAM_MATCH } from "@/lib/tour";
 
 export const Route = createFileRoute("/draw")({
   head: () => ({
     meta: [
-      { title: "Draw Night — SBF Golf Tour 2027, Aroeira" },
+      { title: "Team Match — SBF Golf Tour 2027, Aroeira" },
       {
         name: "description",
-        content: "Pick captains, draw the teams and generate fourball matchplay fixtures for the SBF Golf Tour 2027 at Aroeira.",
+        content: "Teams, captains and fixtures for the SBF Golf Tour 2027 team match — better ball, Texas scramble and singles matchplay across three days.",
       },
-      { property: "og:title", content: "Draw Night — SBF Golf Tour 2027" },
-      { property: "og:description", content: "Captains, teams, pairs and matchplay fixtures for the trip." },
+      { property: "og:title", content: "Team Match — SBF Golf Tour 2027" },
+      { property: "og:description", content: "Eight points up for grabs across better ball, scramble and singles matchplay." },
     ],
   }),
   component: DrawPage,
@@ -67,18 +67,19 @@ function DrawPage() {
       }[] = [];
       let order = 0;
       for (const round of ROUNDS) {
-        for (let i = 0; i < Math.floor(Math.min(a.length, b.length) / 2); i++) {
+        const singles = round.matches === a.length;
+        for (let i = 0; i < round.matches; i++) {
           rows.push({
             round_no: round.no,
-            format: "Fourball Matchplay",
-            side_a: [a[i * 2]?.name ?? "TBC", a[i * 2 + 1]?.name ?? "TBC"],
-            side_b: [b[i * 2]?.name ?? "TBC", b[i * 2 + 1]?.name ?? "TBC"],
+            format: round.format,
+            side_a: singles ? [a[i]?.name ?? "TBC"] : [a[i * 2]?.name ?? "TBC", a[i * 2 + 1]?.name ?? "TBC"],
+            side_b: singles ? [b[i]?.name ?? "TBC"] : [b[i * 2]?.name ?? "TBC", b[i * 2 + 1]?.name ?? "TBC"],
             tee_time: offsetTee(round.tee, i),
             sort_order: order++,
           });
         }
       }
-      if (!rows.length) throw new Error("Draw the teams first");
+      if (!a.length || !b.length) throw new Error("Set the teams first");
       const { error } = await supabase.from("fixtures").insert(rows);
       if (error) throw error;
     },
@@ -123,9 +124,9 @@ function DrawPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Draw Night"
-        title="The Draw"
-        intro="Choose your two captains, spin the draw and the fourball matchplay fixtures write themselves."
+        eyebrow="Team Match"
+        title="Blue v Red"
+        intro={`One point per match, ${TEAM_MATCH.totalPoints} points up for grabs across the three days. ${TEAM_MATCH.tiebreak}`}
       />
 
       <div className="mx-auto max-w-7xl space-y-8 px-4 py-10 sm:px-6">
@@ -214,7 +215,20 @@ function DrawPage() {
         </div>
 
         <div>
-          <p className="eyebrow mb-3">Matchplay fixtures</p>
+          <div className="mb-3 grid gap-2 sm:grid-cols-3">
+            {ROUNDS.map((r) => (
+              <div key={r.no} className="glass rounded-xl px-4 py-3">
+                <p className="text-[0.6rem] uppercase tracking-[0.2em] text-muted-foreground">
+                  {r.label} · {r.day}
+                </p>
+                <p className="mt-1 font-display text-xl">{r.format}</p>
+                <p className="text-xs text-muted-foreground">
+                  {r.matches} points available
+                </p>
+              </div>
+            ))}
+          </div>
+          <p className="eyebrow mb-3">Fixtures</p>
           <div className="grid gap-3 md:grid-cols-2">
             {fixtures.map((f, i) => (
               <motion.div
@@ -239,7 +253,7 @@ function DrawPage() {
               </motion.div>
             ))}
             {!fixtures.length && (
-              <p className="text-sm text-muted-foreground">No fixtures yet — run the draw, then generate.</p>
+              <p className="text-sm text-muted-foreground">No fixtures yet — set the teams, then generate.</p>
             )}
           </div>
         </div>

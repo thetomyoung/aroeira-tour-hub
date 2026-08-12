@@ -9,7 +9,7 @@ const LINKS = [
   { to: "/scores", label: "Enter Scores" },
   { to: "/scorecards", label: "Scorecards" },
   { to: "/packing-list", label: "Packing" },
-  { to: "/draw", label: "Draw Night" },
+  { to: "/draw", label: "Team Match" },
   { to: "/courses", label: "Courses" },
   { to: "/gallery", label: "Gallery" },
   { to: "/slander", label: "Slander Wall" },

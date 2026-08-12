@@ -1,5 +1,5 @@
 import type { Player } from "./golf";
-import { ROUNDS } from "./tour";
+import { STABLEFORD_ROUNDS } from "./tour";
 
 export type RoundTotal = {
   id: string;
@@ -20,7 +20,7 @@ export type StandingRow = {
   movement: number; // positive = climbed places since previous round
 };
 
-const ROUND_NOS = ROUNDS.map((r) => r.no);
+const ROUND_NOS = STABLEFORD_ROUNDS;
 
 function rank(values: { id: string; total: number; name: string }[]) {
   const sorted = [...values].sort((a, b) => b.total - a.total || a.name.localeCompare(b.name));

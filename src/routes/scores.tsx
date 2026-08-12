@@ -72,14 +72,14 @@ function ScoresPage() {
       <PageHeader
         eyebrow="Scoring"
         title="Enter Stableford Totals"
-        intro="Golf GameBook does the hole-by-hole scoring on course. Here you just post one Stableford total per player per round."
+        intro="Golf GameBook does the hole-by-hole scoring on course. Post one Stableford total per player for Round 1 and Round 3 — those two rounds decide the individual champion."
       />
 
       <div className="mx-auto grid max-w-7xl gap-6 px-4 py-10 sm:px-6 lg:grid-cols-[1fr_1fr]">
         <div className="glass rounded-2xl p-5">
           <p className="mb-2 text-[0.6rem] uppercase tracking-[0.24em] text-muted-foreground">Round</p>
           <div className="flex flex-wrap gap-2">
-            {ROUNDS.map((r) => (
+            {ROUNDS.filter((r) => r.stableford).map((r) => (
               <button
                 key={r.no}
                 type="button"
@@ -90,7 +90,7 @@ function ScoresPage() {
                     : "border border-border text-muted-foreground"
                 }`}
               >
-                {r.label}
+                {r.label} · {r.format}
               </button>
             ))}
           </div>

@@ -137,13 +137,50 @@ export const COURSES: Course[] = [
 ];
 
 export const ROUNDS = [
-  { no: 1, label: "Round 1", day: "Tuesday 1st June", courseId: "pines", tee: "14:00" },
-  { no: 2, label: "Round 2", day: "Wednesday 2nd June", courseId: "challenge", tee: "10:00" },
-  { no: 3, label: "Round 3", day: "Thursday 3rd June", courseId: "pines", tee: "11:00" },
+  {
+    no: 1,
+    label: "Round 1",
+    day: "Tuesday 1st June",
+    courseId: "pines",
+    tee: "14:00",
+    format: "Better Ball Stableford",
+    matches: 2,
+    stableford: true,
+  },
+  {
+    no: 2,
+    label: "Round 2",
+    day: "Wednesday 2nd June",
+    courseId: "challenge",
+    tee: "10:00",
+    format: "Texas Scramble Matchplay",
+    matches: 2,
+    stableford: false,
+  },
+  {
+    no: 3,
+    label: "Round 3",
+    day: "Thursday 3rd June",
+    courseId: "pines",
+    tee: "11:00",
+    format: "Singles Matchplay",
+    matches: 4,
+    stableford: true,
+  },
 ] as const;
+
+/** Rounds that feed the cumulative individual Stableford leaderboard. */
+export const STABLEFORD_ROUNDS = ROUNDS.filter((r) => r.stableford).map((r) => r.no);
+
+export const TEAM_MATCH = {
+  totalPoints: ROUNDS.reduce((a, r) => a + r.matches, 0),
+  tiebreak: "A putting competition decides the winners if the match finishes level.",
+};
 
 export const courseForRound = (roundNo: number) =>
   COURSES.find((c) => c.id === ROUNDS.find((r) => r.no === roundNo)?.courseId) ?? COURSES[0]!;
+
+
 
 export type AgendaItem = {
   time?: string;

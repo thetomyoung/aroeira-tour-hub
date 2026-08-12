@@ -17,7 +17,9 @@ export function TournamentBoard({
     return <p className="glass rounded-2xl p-6 text-sm text-muted-foreground">No players yet.</p>;
   }
 
-  const roundCols = scope === "overall" ? ROUNDS : ROUNDS.filter((r) => r.no === scope);
+  const stablefordRounds = ROUNDS.filter((r) => r.stableford);
+  const roundCols =
+    scope === "overall" ? stablefordRounds : stablefordRounds.filter((r) => r.no === scope);
 
   return (
     <div className="glass overflow-hidden rounded-2xl">

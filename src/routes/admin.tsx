@@ -372,7 +372,7 @@ function FixturesAdmin() {
   });
 
   if (!fixtures.length) {
-    return <Card title="Tee times & fixtures">Generate fixtures on Draw Night first.</Card>;
+    return <Card title="Tee times & fixtures">Generate fixtures on the Team Match page first.</Card>;
   }
 
   return (

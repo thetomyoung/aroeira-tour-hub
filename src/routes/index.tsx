@@ -23,10 +23,10 @@ export const Route = createFileRoute("/")({
         content:
           "The official hub for the SBF Golf Tour 2027 at Aroeira, Lisbon. Race to Lisbon podium, Stableford leaderboard, countdown, weather, agenda and courses.",
       },
-      { property: "og:title", content: "SBF Golf Tour 2027 – Lisbon" },
+      { property: "og:title", content: "SBF Golf Tour 2027 – Lisbon | Tournament Hub" },
       {
         property: "og:description",
-        content: "Race to Lisbon podium, Stableford standings, countdown and course guides for the SBF Golf Tour 2027.",
+        content: "The official hub for the SBF Golf Tour 2027 at Aroeira, Lisbon. Race to Lisbon podium, Stableford leaderboard, countdown, weather, agenda and courses.",
       },
     ],
   }),

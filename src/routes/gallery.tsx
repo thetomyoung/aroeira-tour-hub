@@ -1,12 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ImagePlus } from "lucide-react";
+import { ImagePlus, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/section";
 import { Lightbox, useLightbox } from "@/components/lightbox";
 import { usePhotos } from "@/lib/data";
+import { uploadPhoto } from "@/lib/upload";
 import { GALLERY_IMAGES } from "@/lib/tour";
 
 export const Route = createFileRoute("/gallery")({
@@ -15,10 +16,14 @@ export const Route = createFileRoute("/gallery")({
       { title: "Photo Gallery — SBF Golf Tour 2027, Aroeira" },
       {
         name: "description",
-        content: "Photos from the SBF Golf Tour 2027 at Aroeira and previous trips. Add your own shots from the course and the night out.",
+        content:
+          "Photos from the SBF Golf Tour 2027 at Aroeira and previous trips. Add your own shots from the course and the night out.",
       },
       { property: "og:title", content: "Photo Gallery — SBF Golf Tour 2027" },
-      { property: "og:description", content: "The trip in pictures — courses, clubhouse, terrace and everything after dark." },
+      {
+        property: "og:description",
+        content: "The trip in pictures — courses, clubhouse, terrace and everything after dark.",
+      },
     ],
   }),
   component: GalleryPage,
@@ -28,37 +33,49 @@ function GalleryPage() {
   const qc = useQueryClient();
   const { data: photos = [] } = usePhotos();
   const [tab, setTab] = useState<2027 | 2026>(2027);
-  const [url, setUrl] = useState("");
   const [caption, setCaption] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
   const lb = useLightbox();
 
   const add = useMutation({
-    mutationFn: async () => {
-      if (!/^https?:\/\//.test(url.trim())) throw new Error("Paste a valid image URL");
+    mutationFn: async (file: File) => {
+      const publicUrl = await uploadPhoto(file);
       const { error } = await supabase
         .from("photos")
-        .insert({ url: url.trim(), caption: caption.trim().slice(0, 120) || null, trip_year: tab });
+        .insert({ url: publicUrl, caption: caption.trim().slice(0, 120) || null, trip_year: tab });
       if (error) throw error;
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["photos"] });
-      setUrl("");
       setCaption("");
       toast.success("Photo added");
     },
     onError: (e: Error) => toast.error(e.message),
+    onSettled: () => setUploading(false),
   });
+
+  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    setUploading(true);
+    add.mutate(file);
+  };
 
   const uploaded = photos
     .filter((p) => p.trip_year === tab)
     .map((p) => ({ src: p.url, caption: p.caption ?? undefined }));
-  const seeds =
-    tab === 2027 ? GALLERY_IMAGES.map((g) => ({ src: g.src, caption: g.label })) : [];
+  const seeds = tab === 2027 ? GALLERY_IMAGES.map((g) => ({ src: g.src, caption: g.label })) : [];
   const images = [...uploaded, ...seeds];
 
   return (
     <>
-      <PageHeader eyebrow="Gallery" title="The Trip In Pictures" intro="Tap any image to open the lightbox." />
+      <PageHeader
+        eyebrow="Gallery"
+        title="The Trip In Pictures"
+        intro="Tap any image to open the lightbox."
+      />
 
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
         <div className="mb-6 flex flex-wrap gap-2">
@@ -68,7 +85,9 @@ function GalleryPage() {
               type="button"
               onClick={() => setTab(year as 2027 | 2026)}
               className={`rounded-full px-5 py-2 font-display tracking-wider ${
-                tab === year ? "bg-primary text-primary-foreground" : "border border-border text-muted-foreground"
+                tab === year
+                  ? "bg-primary text-primary-foreground"
+                  : "border border-border text-muted-foreground"
               }`}
             >
               {year === 2027 ? "2027 Trip" : "Previous Trips"}
@@ -76,20 +95,7 @@ function GalleryPage() {
           ))}
         </div>
 
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            add.mutate();
-          }}
-          className="glass mb-8 grid gap-3 rounded-2xl p-5 sm:grid-cols-[1.4fr_1fr_auto]"
-        >
-          <input
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            maxLength={500}
-            placeholder="Image URL"
-            className="rounded-xl border border-border bg-input/40 px-4 py-2.5 text-sm outline-none focus:border-primary"
-          />
+        <div className="glass mb-8 grid gap-3 rounded-2xl p-5 sm:grid-cols-[1fr_auto]">
           <input
             value={caption}
             onChange={(e) => setCaption(e.target.value)}
@@ -97,13 +103,28 @@ function GalleryPage() {
             placeholder="Caption (optional)"
             className="rounded-xl border border-border bg-input/40 px-4 py-2.5 text-sm outline-none focus:border-primary"
           />
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/*"
+            capture="environment"
+            onChange={handleFile}
+            className="hidden"
+          />
           <button
-            type="submit"
-            className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-5 py-2.5 font-display tracking-wider text-primary-foreground"
+            type="button"
+            disabled={uploading}
+            onClick={() => fileRef.current?.click()}
+            className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-5 py-2.5 font-display tracking-wider text-primary-foreground disabled:opacity-60"
           >
-            <ImagePlus className="size-4" /> Add
+            {uploading ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <ImagePlus className="size-4" />
+            )}
+            {uploading ? "Uploading…" : "Add photo"}
           </button>
-        </form>
+        </div>
 
         <div className="columns-2 gap-3 md:columns-3 lg:columns-4">
           {images.map((img, i) => (
@@ -122,7 +143,9 @@ function GalleryPage() {
             </button>
           ))}
         </div>
-        {!images.length && <p className="text-sm text-muted-foreground">No photos yet for this trip.</p>}
+        {!images.length && (
+          <p className="text-sm text-muted-foreground">No photos yet for this trip.</p>
+        )}
       </div>
 
       <Lightbox images={images} index={lb.index} onClose={lb.close} onNavigate={lb.navigate} />

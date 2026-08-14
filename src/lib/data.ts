@@ -25,6 +25,7 @@ export type Award = {
   value: number | null;
 };
 export type Photo = { id: string; url: string; caption: string | null; trip_year: number };
+export type Shout = { id: string; text: string; image: string | null; created_at: string };
 
 export function usePlayers() {
   return useQuery({
@@ -95,11 +96,41 @@ export function usePhotos() {
   });
 }
 
+export function useShouts() {
+  return useQuery({
+    queryKey: ["shouts"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("shouts")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(200);
+      if (error) throw error;
+      return (data ?? []) as unknown as Shout[];
+    },
+  });
+}
+
+export function useAddShout() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ text, image }: { text: string; image: string | null }) => {
+      const { error } = await supabase.from("shouts").insert({ text, image });
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["shouts"] }),
+  });
+}
+
 export function useSetting<T>(key: string, fallback: T) {
   const query = useQuery({
     queryKey: ["settings", key],
     queryFn: async () => {
-      const { data, error } = await supabase.from("settings").select("value").eq("key", key).maybeSingle();
+      const { data, error } = await supabase
+        .from("settings")
+        .select("value")
+        .eq("key", key)
+        .maybeSingle();
       if (error) throw error;
       return (data?.value ?? fallback) as T;
     },
@@ -135,6 +166,9 @@ export function useLiveSync() {
       .on("postgres_changes", { event: "*", schema: "public", table: "round_totals" }, () =>
         qc.invalidateQueries({ queryKey: ["round_totals"] }),
       )
+      .on("postgres_changes", { event: "*", schema: "public", table: "shouts" }, () =>
+        qc.invalidateQueries({ queryKey: ["shouts"] }),
+      )
       .subscribe();
     return () => {
       void supabase.removeChannel(channel);
@@ -156,7 +190,15 @@ export function useRoundTotals() {
 export function useSaveRoundTotal() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({ player_id, round_no, points }: { player_id: string; round_no: number; points: number }) => {
+    mutationFn: async ({
+      player_id,
+      round_no,
+      points,
+    }: {
+      player_id: string;
+      round_no: number;
+      points: number;
+    }) => {
       const { error } = await supabase
         .from("round_totals")
         .upsert({ player_id, round_no, points }, { onConflict: "player_id,round_no" });

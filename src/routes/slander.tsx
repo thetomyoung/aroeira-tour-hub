@@ -1,10 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { Flame, Image, Loader2, Send, ShieldOff, X } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/section";
-import { supabase } from "@/integrations/supabase/client";
+import { useShouts, useAddShout } from "@/lib/data";
 import { uploadPhoto } from "@/lib/upload";
 
 export const Route = createFileRoute("/slander")({
@@ -14,20 +14,18 @@ export const Route = createFileRoute("/slander")({
       {
         name: "description",
         content:
-          "Anonymous trash talk for the SBF Golf Tour 2027. Nothing is stored, nothing is logged — posts vanish the moment you leave.",
+          "Anonymous trash talk for the SBF Golf Tour 2027. Posts stay up for the whole trip.",
       },
       { property: "og:title", content: "Slander Wall — SBF Golf Tour 2027" },
       {
         property: "og:description",
-        content: "Anonymous, unstored trash talk for the Lisbon tour.",
+        content: "Anonymous trash talk for the Lisbon tour.",
       },
       { name: "robots", content: "noindex" },
     ],
   }),
   component: SlanderPage,
 });
-
-type Shout = { id: string; text: string; image: string | null; at: number; mine: boolean };
 
 const ALIASES = [
   "Anonymous Hacker",
@@ -39,56 +37,21 @@ const ALIASES = [
 ];
 
 function SlanderPage() {
-  const [shouts, setShouts] = useState<Shout[]>([]);
+  const { data: shouts = [] } = useShouts();
+  const addShout = useAddShout();
   const [text, setText] = useState("");
   const [image, setImage] = useState("");
   const [uploading, setUploading] = useState(false);
-  const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    const channel = supabase.channel("slander-wall", { config: { broadcast: { self: false } } });
-    channel
-      .on("broadcast", { event: "shout" }, ({ payload }) => {
-        const body = String((payload as { text?: string })?.text ?? "").slice(0, 240);
-        const img = String((payload as { image?: string })?.image ?? "").slice(0, 500);
-        if (!body && !img) return;
-        setShouts((prev) =>
-          [
-            {
-              id: crypto.randomUUID(),
-              text: body,
-              image: img || null,
-              at: Date.now(),
-              mine: false,
-            },
-            ...prev,
-          ].slice(0, 60),
-        );
-      })
-      .subscribe();
-    channelRef.current = channel;
-    return () => {
-      void supabase.removeChannel(channel);
-      channelRef.current = null;
-    };
-  }, []);
 
   const send = (e: React.FormEvent) => {
     e.preventDefault();
     const body = text.trim().slice(0, 240);
     const img = image.trim();
     if (!body && !img) return;
-    void channelRef.current?.send({
-      type: "broadcast",
-      event: "shout",
-      payload: { text: body, image: img || null },
-    });
-    setShouts((prev) =>
-      [
-        { id: crypto.randomUUID(), text: body, image: img || null, at: Date.now(), mine: true },
-        ...prev,
-      ].slice(0, 60),
+    addShout.mutate(
+      { text: body, image: img || null },
+      { onError: (err: Error) => toast.error(err.message) },
     );
     setText("");
     setImage("");
@@ -112,16 +75,16 @@ function SlanderPage() {
   return (
     <>
       <PageHeader
-        eyebrow="No names, no records"
+        eyebrow="No names, just banter"
         title="Slander Wall"
-        intro="Anonymous trash talk that lives only in this browser session. Nothing is saved to the database, nothing is logged, and everything disappears on refresh."
+        intro="Anonymous trash talk for the whole trip. Posts stay up for everyone to see."
       />
       <div className="mx-auto max-w-3xl space-y-6 px-4 py-10 sm:px-6">
         <div className="glass-gold flex items-start gap-3 rounded-2xl p-4 text-xs text-muted-foreground">
           <ShieldOff className="mt-0.5 size-4 shrink-0 text-gold" />
           <p>
-            Posts are broadcast live to anyone with this page open and are never stored. Keep it
-            funny — the handicaps are already punishment enough.
+            Posts are anonymous and stay up for anyone with this page. Keep it funny — the handicaps
+            are already punishment enough.
           </p>
         </div>
 
@@ -158,8 +121,9 @@ function SlanderPage() {
             </button>
             <button
               type="submit"
+              disabled={addShout.isPending}
               aria-label="Post anonymously"
-              className="grid size-11 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground transition-transform hover:scale-105"
+              className="grid size-11 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground transition-transform hover:scale-105 disabled:opacity-60"
             >
               <Send className="size-4" />
             </button>
@@ -198,9 +162,12 @@ function SlanderPage() {
               >
                 <div className="flex items-center gap-2 text-[0.6rem] uppercase tracking-[0.22em] text-muted-foreground">
                   <Flame className="size-3 text-gold" />
-                  {s.mine ? "You (anonymous)" : ALIASES[i % ALIASES.length]}
+                  {ALIASES[i % ALIASES.length]}
                   <span className="ml-auto normal-case tracking-normal">
-                    {new Date(s.at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                    {new Date(s.created_at).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
                   </span>
                 </div>
                 {s.text && <p className="mt-2 text-sm leading-relaxed">{s.text}</p>}

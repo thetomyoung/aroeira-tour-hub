@@ -1,12 +1,21 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Lock, LogOut, Plus, Trash2, Save } from "lucide-react";
+import { Lock, LogOut, Plus, Trash2, Save, Upload, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/section";
 import { useAdmin } from "@/lib/admin";
-import { usePlayers, useFixtures, usePhotos, useSetting, useSaveSetting, useRoundTotals, useSaveRoundTotal } from "@/lib/data";
+import {
+  usePlayers,
+  useFixtures,
+  usePhotos,
+  useSetting,
+  useSaveSetting,
+  useRoundTotals,
+  useSaveRoundTotal,
+} from "@/lib/data";
+import { uploadPhoto } from "@/lib/upload";
 import { ROUNDS } from "@/lib/tour";
 import type { Player } from "@/lib/golf";
 
@@ -16,10 +25,14 @@ export const Route = createFileRoute("/admin")({
       { title: "Organiser Admin — SBF Golf Tour 2027, Aroeira" },
       {
         name: "description",
-        content: "Passcode-protected organiser tools for the SBF Golf Tour 2027: manage players, handicaps, tee times, fixtures, photos and the weather location.",
+        content:
+          "Passcode-protected organiser tools for the SBF Golf Tour 2027: manage players, handicaps, tee times, fixtures, photos and the weather location.",
       },
       { property: "og:title", content: "Organiser Admin — SBF Golf Tour 2027" },
-      { property: "og:description", content: "Tournament management tools for the trip organisers." },
+      {
+        property: "og:description",
+        content: "Tournament management tools for the trip organisers.",
+      },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -33,7 +46,11 @@ function AdminPage() {
   if (!isAdmin) {
     return (
       <>
-        <PageHeader eyebrow="Organisers only" title="Admin" intro="Enter the organiser passcode to continue." />
+        <PageHeader
+          eyebrow="Organisers only"
+          title="Admin"
+          intro="Enter the organiser passcode to continue."
+        />
         <div className="mx-auto max-w-md px-4 py-12">
           <form
             onSubmit={async (e) => {
@@ -68,7 +85,11 @@ function AdminPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Organisers" title="Tournament Admin" intro="Everything the captains need to run the week." />
+      <PageHeader
+        eyebrow="Organisers"
+        title="Tournament Admin"
+        intro="Everything the captains need to run the week."
+      />
       <div className="mx-auto max-w-7xl space-y-8 px-4 py-10 sm:px-6">
         <button
           type="button"
@@ -108,8 +129,8 @@ function RoundTotalsAdmin() {
   return (
     <Card title="Daily Stableford totals (Golf GameBook)">
       <p className="mb-4 text-xs text-muted-foreground">
-        Enter one number per player after each round. The leaderboard, podium and all tournament stats update
-        automatically.
+        Enter one number per player after each round. The leaderboard, podium and all tournament
+        stats update automatically.
       </p>
       <div className="mb-4 flex flex-wrap gap-2">
         {ROUNDS.map((r) => (
@@ -118,7 +139,9 @@ function RoundTotalsAdmin() {
             type="button"
             onClick={() => setRound(r.no)}
             className={`rounded-full px-4 py-2 font-display text-base tracking-wider transition-colors ${
-              round === r.no ? "bg-primary text-primary-foreground" : "border border-border text-muted-foreground"
+              round === r.no
+                ? "bg-primary text-primary-foreground"
+                : "border border-border text-muted-foreground"
             }`}
           >
             {r.label}
@@ -258,7 +281,12 @@ function PlayersAdmin() {
 
       <div className="space-y-3">
         {players.map((p) => (
-          <PlayerRow key={p.id} player={p} onSave={(x) => save.mutate(x)} onDelete={() => remove.mutate(p.id)} />
+          <PlayerRow
+            key={p.id}
+            player={p}
+            onSave={(x) => save.mutate(x)}
+            onDelete={() => remove.mutate(p.id)}
+          />
         ))}
       </div>
     </Card>
@@ -275,11 +303,34 @@ function PlayerRow({
   onDelete: () => void;
 }) {
   const [p, setP] = useState(player);
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
   const set = <K extends keyof Player>(k: K, v: Player[K]) => setP((prev) => ({ ...prev, [k]: v }));
+
+  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    setUploading(true);
+    try {
+      const publicUrl = await uploadPhoto(file);
+      set("photo_url", publicUrl);
+      toast.success("Photo uploaded, remember to hit Save");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  };
 
   return (
     <div className="grid gap-2 rounded-xl border border-border/60 bg-secondary/30 p-3 sm:grid-cols-4">
-      <input className={input} value={p.name} maxLength={40} onChange={(e) => set("name", e.target.value)} />
+      <input
+        className={input}
+        value={p.name}
+        maxLength={40}
+        onChange={(e) => set("name", e.target.value)}
+      />
       <input
         className={input}
         type="number"
@@ -303,13 +354,31 @@ function PlayerRow({
         onChange={(e) => set("driving_distance", Number(e.target.value))}
         placeholder="Drive (yd)"
       />
-      <input
-        className={input}
-        value={p.photo_url ?? ""}
-        maxLength={500}
-        onChange={(e) => set("photo_url", e.target.value || null)}
-        placeholder="Photo URL"
-      />
+      <div className="flex items-center gap-2">
+        {p.photo_url && (
+          <img
+            src={p.photo_url}
+            alt={`${p.name} photo`}
+            className="size-9 shrink-0 rounded-lg object-cover"
+          />
+        )}
+        <input
+          ref={fileRef}
+          type="file"
+          accept="image/*"
+          onChange={handleFile}
+          className="hidden"
+        />
+        <button
+          type="button"
+          disabled={uploading}
+          onClick={() => fileRef.current?.click()}
+          className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-border bg-input/40 px-3 py-2 text-sm text-muted-foreground disabled:opacity-60"
+        >
+          {uploading ? <Loader2 className="size-4 animate-spin" /> : <Upload className="size-4" />}
+          {uploading ? "Uploading…" : p.photo_url ? "Change photo" : "Upload photo"}
+        </button>
+      </div>
       <input
         className={input}
         value={p.ryder_record}
@@ -358,7 +427,15 @@ function FixturesAdmin() {
   const { data: fixtures = [] } = useFixtures();
 
   const update = useMutation({
-    mutationFn: async ({ id, tee_time, result }: { id: string; tee_time: string; result: string }) => {
+    mutationFn: async ({
+      id,
+      tee_time,
+      result,
+    }: {
+      id: string;
+      tee_time: string;
+      result: string;
+    }) => {
       const { error } = await supabase
         .from("fixtures")
         .update({ tee_time, result: result || null })
@@ -372,14 +449,20 @@ function FixturesAdmin() {
   });
 
   if (!fixtures.length) {
-    return <Card title="Tee times & fixtures">Generate fixtures on the Team Match page first.</Card>;
+    return (
+      <Card title="Tee times & fixtures">Generate fixtures on the Team Match page first.</Card>
+    );
   }
 
   return (
     <Card title="Tee times & fixtures">
       <div className="space-y-2">
         {fixtures.map((f) => (
-          <FixtureRow key={f.id} fixture={f} onSave={(tee, res) => update.mutate({ id: f.id, tee_time: tee, result: res })} />
+          <FixtureRow
+            key={f.id}
+            fixture={f}
+            onSave={(tee, res) => update.mutate({ id: f.id, tee_time: tee, result: res })}
+          />
         ))}
       </div>
     </Card>
@@ -390,7 +473,14 @@ function FixtureRow({
   fixture,
   onSave,
 }: {
-  fixture: { id: string; round_no: number; side_a: string[]; side_b: string[]; tee_time: string | null; result: string | null };
+  fixture: {
+    id: string;
+    round_no: number;
+    side_a: string[];
+    side_b: string[];
+    tee_time: string | null;
+    result: string | null;
+  };
   onSave: (tee: string, result: string) => void;
 }) {
   const [tee, setTee] = useState(fixture.tee_time ?? "");
@@ -400,7 +490,13 @@ function FixtureRow({
       <p className="truncate text-sm">
         R{fixture.round_no}: {fixture.side_a.join(" & ")} v {fixture.side_b.join(" & ")}
       </p>
-      <input className={input} value={tee} maxLength={5} onChange={(e) => setTee(e.target.value)} placeholder="Tee" />
+      <input
+        className={input}
+        value={tee}
+        maxLength={5}
+        onChange={(e) => setTee(e.target.value)}
+        placeholder="Tee"
+      />
       <input
         className={input}
         value={result}
@@ -436,7 +532,12 @@ function PhotosAdmin() {
         <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
           {photos.map((p) => (
             <div key={p.id} className="relative">
-              <img src={p.url} alt={p.caption ?? "Photo"} loading="lazy" className="h-20 w-full rounded-lg object-cover" />
+              <img
+                src={p.url}
+                alt={p.caption ?? "Photo"}
+                loading="lazy"
+                className="h-20 w-full rounded-lg object-cover"
+              />
               <button
                 type="button"
                 aria-label="Delete photo"
@@ -449,14 +550,20 @@ function PhotosAdmin() {
           ))}
         </div>
       ) : (
-        <p className="text-sm text-muted-foreground">No uploads yet — add them from the Gallery page.</p>
+        <p className="text-sm text-muted-foreground">
+          No uploads yet — add them from the Gallery page.
+        </p>
       )}
     </Card>
   );
 }
 
 function WeatherAdmin() {
-  const { value } = useSetting("weather", { lat: 38.5167, lon: -9.2167, label: "Aroeira, Portugal" });
+  const { value } = useSetting("weather", {
+    lat: 38.5167,
+    lon: -9.2167,
+    label: "Aroeira, Portugal",
+  });
   const saveSetting = useSaveSetting();
   const [form, setForm] = useState(value);
 

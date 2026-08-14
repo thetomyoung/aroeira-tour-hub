@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { Award, Ruler, Trophy, Flame, Club } from "lucide-react";
+import { Ruler, Trophy, Flame, Club } from "lucide-react";
 import type { Player } from "@/lib/golf";
 
 export function PlayerCards({ players }: { players: Player[] }) {
@@ -43,7 +43,6 @@ export function PlayerCards({ players }: { players: Player[] }) {
           <ul className="space-y-2 p-4 text-xs text-muted-foreground">
             <Row icon={Ruler} text={`${p.driving_distance} yd average drive`} />
             <Row icon={Trophy} text={`${p.previous_wins} previous tour wins`} />
-            <Row icon={Award} text={`Ryder Cup record ${p.ryder_record}`} />
             <Row icon={Club} text={`Favourite club: ${p.favourite_club}`} />
             <Row icon={Flame} text={`Form: ${p.current_form}`} />
           </ul>
@@ -62,7 +61,7 @@ function Fact({ label, value }: { label: string; value: string }) {
   );
 }
 
-function Row({ icon: Icon, text }: { icon: typeof Award; text: string }) {
+function Row({ icon: Icon, text }: { icon: typeof Trophy; text: string }) {
   return (
     <li className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-2">
       <Icon className="size-3.5 shrink-0 text-primary" />

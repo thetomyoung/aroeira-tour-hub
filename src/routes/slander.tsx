@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { Flame, Send, ShieldOff } from "lucide-react";
+import { Flame, Image, Send, ShieldOff, X } from "lucide-react";
+import { toast } from "sonner";
 import { PageHeader } from "@/components/section";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -22,13 +23,15 @@ export const Route = createFileRoute("/slander")({
   component: SlanderPage,
 });
 
-type Shout = { id: string; text: string; at: number; mine: boolean };
+type Shout = { id: string; text: string; image: string | null; at: number; mine: boolean };
 
 const ALIASES = ["Anonymous Hacker", "Shanks McGee", "Bandit Handicap", "Range Rat", "Bunker Dweller", "Three Putt"];
 
 function SlanderPage() {
   const [shouts, setShouts] = useState<Shout[]>([]);
   const [text, setText] = useState("");
+  const [image, setImage] = useState("");
+  const [showImageField, setShowImageField] = useState(false);
   const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
 
   useEffect(() => {
@@ -36,8 +39,15 @@ function SlanderPage() {
     channel
       .on("broadcast", { event: "shout" }, ({ payload }) => {
         const body = String((payload as { text?: string })?.text ?? "").slice(0, 240);
-        if (!body) return;
-        setShouts((prev) => [{ id: crypto.randomUUID(), text: body, at: Date.now(), mine: false }, ...prev].slice(0, 60));
+        const img = String((payload as { image?: string })?.image ?? "").slice(0, 500);
+        if (!body && !img) return;
+        setShouts(
+          (prev) =>
+            [{ id: crypto.randomUUID(), text: body, image: img || null, at: Date.now(), mine: false }, ...prev].slice(
+              0,
+              60,
+            ),
+        );
       })
       .subscribe();
     channelRef.current = channel;
@@ -50,10 +60,23 @@ function SlanderPage() {
   const send = (e: React.FormEvent) => {
     e.preventDefault();
     const body = text.trim().slice(0, 240);
-    if (!body) return;
-    void channelRef.current?.send({ type: "broadcast", event: "shout", payload: { text: body } });
-    setShouts((prev) => [{ id: crypto.randomUUID(), text: body, at: Date.now(), mine: true }, ...prev].slice(0, 60));
+    const img = image.trim();
+    if (img && !/^https?:\/\//.test(img)) {
+      toast.error("Paste a valid image URL");
+      return;
+    }
+    if (!body && !img) return;
+    void channelRef.current?.send({
+      type: "broadcast",
+      event: "shout",
+      payload: { text: body, image: img || null },
+    });
+    setShouts(
+      (prev) => [{ id: crypto.randomUUID(), text: body, image: img || null, at: Date.now(), mine: true }, ...prev].slice(0, 60),
+    );
     setText("");
+    setImage("");
+    setShowImageField(false);
   };
 
   return (
@@ -72,21 +95,55 @@ function SlanderPage() {
           </p>
         </div>
 
-        <form onSubmit={send} className="glass flex items-center gap-2 rounded-2xl p-3">
-          <input
-            value={text}
-            maxLength={240}
-            onChange={(e) => setText(e.target.value)}
-            placeholder="Say the unsayable…"
-            className="w-full rounded-xl border border-border bg-input/40 px-4 py-3 text-sm outline-none focus:border-primary"
-          />
-          <button
-            type="submit"
-            aria-label="Post anonymously"
-            className="grid size-11 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground transition-transform hover:scale-105"
-          >
-            <Send className="size-4" />
-          </button>
+        <form onSubmit={send} className="glass space-y-2 rounded-2xl p-3">
+          <div className="flex items-center gap-2">
+            <input
+              value={text}
+              maxLength={240}
+              onChange={(e) => setText(e.target.value)}
+              placeholder="Say the unsayable…"
+              className="w-full rounded-xl border border-border bg-input/40 px-4 py-3 text-sm outline-none focus:border-primary"
+            />
+            <button
+              type="button"
+              onClick={() => setShowImageField((v) => !v)}
+              aria-label="Add image"
+              aria-pressed={showImageField}
+              className={`grid size-11 shrink-0 place-items-center rounded-full border transition-colors ${
+                showImageField ? "border-primary text-primary" : "border-border text-muted-foreground"
+              }`}
+            >
+              <Image className="size-4" />
+            </button>
+            <button
+              type="submit"
+              aria-label="Post anonymously"
+              className="grid size-11 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground transition-transform hover:scale-105"
+            >
+              <Send className="size-4" />
+            </button>
+          </div>
+          {showImageField && (
+            <div className="flex items-center gap-2">
+              <input
+                value={image}
+                maxLength={500}
+                onChange={(e) => setImage(e.target.value)}
+                placeholder="Image URL (optional)"
+                className="w-full rounded-xl border border-border bg-input/40 px-4 py-2.5 text-sm outline-none focus:border-primary"
+              />
+              {image && (
+                <button
+                  type="button"
+                  onClick={() => setImage("")}
+                  aria-label="Clear image"
+                  className="grid size-9 shrink-0 place-items-center rounded-full border border-border text-muted-foreground"
+                >
+                  <X className="size-4" />
+                </button>
+              )}
+            </div>
+          )}
         </form>
 
         <div className="space-y-3">
@@ -108,7 +165,15 @@ function SlanderPage() {
                     {new Date(s.at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                   </span>
                 </div>
-                <p className="mt-2 text-sm leading-relaxed">{s.text}</p>
+                {s.text && <p className="mt-2 text-sm leading-relaxed">{s.text}</p>}
+                {s.image && (
+                  <img
+                    src={s.image}
+                    alt="Slander wall attachment"
+                    loading="lazy"
+                    className="mt-2 max-h-72 w-full rounded-xl object-cover"
+                  />
+                )}
               </motion.article>
             ))}
           </AnimatePresence>

@@ -112,6 +112,27 @@ export type Database = {
         }
         Relationships: []
       }
+      shouts: {
+        Row: {
+          created_at: string
+          id: string
+          image: string | null
+          text: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image?: string | null
+          text?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image?: string | null
+          text?: string
+        }
+        Relationships: []
+      }
       players: {
         Row: {
           created_at: string

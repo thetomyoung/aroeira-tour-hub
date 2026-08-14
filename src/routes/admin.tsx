@@ -354,6 +354,14 @@ function PlayerRow({
         onChange={(e) => set("driving_distance", Number(e.target.value))}
         placeholder="Drive (yd)"
       />
+      <input
+        className={input}
+        type="number"
+        min={0}
+        value={p.previous_wins}
+        onChange={(e) => set("previous_wins", Number(e.target.value))}
+        placeholder="Previous tour wins"
+      />
       <div className="flex items-center gap-2">
         {p.photo_url && (
           <img
@@ -379,13 +387,6 @@ function PlayerRow({
           {uploading ? "Uploading…" : p.photo_url ? "Change photo" : "Upload photo"}
         </button>
       </div>
-      <input
-        className={input}
-        value={p.ryder_record}
-        maxLength={20}
-        onChange={(e) => set("ryder_record", e.target.value)}
-        placeholder="Ryder record"
-      />
       <input
         className={input}
         value={p.favourite_club}
